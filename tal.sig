@@ -63,7 +63,7 @@ type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
 type mult register -> register -> term -> term -> term.
 type load register -> register -> term -> term -> term.
-type malloc register -> term -> term -> term.
+type malloc register -> typ -> typ -> term -> term.
 type move register -> term -> term -> term.
 type store register -> register -> term -> term.
 
