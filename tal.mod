@@ -10,6 +10,12 @@ subsetEnvH EnvH (consEnvH L T Rest) :- subsetEnvH EnvH Rest.
 lookupMapH (consMapH L E MU) L E.
 lookupMapH (consMapH L1 E1 MU) L E :- lookupMapH MU L E.
 
+array_get (array E1 E2) (zero) E1.
+array_get (array E1 E2) (one) E2.
+
+set_flag (arrayT T1 FL1 T2 FL2) (zero) (arrayT T1 (one) T2 FL2).
+set_flag (arrayT T1 FL1 T2 FL2) (one) (arrayT T1 FL1 T2 (one)).
+
 updateMapH (consMapH L E MU) L E' (consMapH L E' MU).
 updateMapH (consMapH L1 E1 MU) L E' (consMapH L1 E1 MU') :- updateMapH MU L E' MU'.
 
