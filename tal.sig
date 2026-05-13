@@ -65,7 +65,7 @@ type mult register -> register -> term -> term -> term.
 type load register -> register -> term -> term -> term.
 type malloc register -> typ -> typ -> term -> term.
 type move register -> term -> term -> term.
-type store register -> register -> term -> term.
+type store register -> register -> term -> term -> term.
 
 
 type codeT envR -> typ. 
@@ -78,9 +78,17 @@ type bnz register -> term -> term -> term.
 type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.
 type typeOf envT -> envH -> envR -> term -> typ -> o.
+type typeOfW envT -> envH -> envR -> term -> typ -> term -> o.
+type typeOfH envT -> envH -> envR -> term -> typ -> o.
+type typeOfV envT -> envH -> envR -> term -> typ -> o.
 
 type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
+
+type array_get term -> term -> term -> o.
+type arrayT_get typ -> term -> typ -> o.
+
+type set_flag typ -> term -> typ -> o.
 
 type arrayT typ -> term -> typ -> term -> typ.
 
