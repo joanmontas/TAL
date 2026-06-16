@@ -432,35 +432,50 @@ IH0 : induction on 1. %% Perform Induction on the 1th premise
 intros Main typeOfHNEW TypeOfR Step.
 Typing0: case Main.
 /* ################################### halt ############################################# */
+%% match
  Beginshalt: apply Step.
  Prem0: case Step(keep).
 /* ################################### add ############################################# */
+%% match
 Beginadd: apply Step.
-Prem0: case Step(keep).
-apply Find-type-in-envR to Prem0 TypeOfR Typing1.
-apply Find-type-user-defined-addition to Prem1 Typing2 H1.
-apply Irrelevance-Env-for-ValueTyping-R to H2 Prem3 with EnvR' = EnvR'.
-apply TypeOf-updateR to TypeOfR Typing3 H3 Prem2.
-witness EnvH.
-witness EnvR'.
-split.
-search.
-search.
-backchain TypeOf-irrelevanceOfEnv-H.
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedZs: apply Typing1. 
+TypingInsertedV1: apply Typing2. 
+TypingInsertedE: apply Typing3. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedV2: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+ 
+TypingInsertedV3: apply Find-type-user-defined-addition to Prem1 TypingInsertedV1 TypingInsertedV2.
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR Typing3 Tmp Prem2.
+witness EnvH.  
+witness EnvR'.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-irrelevanceOfEnv-H.  
 search.
 /* ################################### mult ############################################# */
-Beginmult: apply Step.
-Prem0: case Step(keep).
-apply Find-type-in-envR to Prem0 TypeOfR Typing1.
-apply Find-type-user-defined-multiplication to Prem1 Typing2 H1.
-apply Irrelevance-Env-for-ValueTyping-R to H2 Prem3 with EnvR' = EnvR'.
-apply TypeOf-updateR to TypeOfR Typing3 H3 Prem2.
-witness EnvH.
-witness EnvR'.
-split.
-search.
-search.
-backchain TypeOf-irrelevanceOfEnv-H.
+%% match
+Beginsmult: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedZs: apply Typing1. 
+TypingInsertedV1: apply Typing2. 
+TypingInsertedE: apply Typing3. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedV2: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+ 
+TypingInsertedV3: apply Find-type-user-defined-multiplication to Prem1 TypingInsertedV1 TypingInsertedV2.
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR Typing3 Tmp Prem2.
+witness EnvH.  
+witness EnvR'.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-irrelevanceOfEnv-H.  
 search.
 /* ################################### load ############################################# */
 Beginload: apply Step.
@@ -515,16 +530,21 @@ zero T2 zero))}.
 apply TypeOf-updateR to Reg_Ext Typing1 PtrTyp Prem1.
 search.
 /* ################################### move ############################################# */
-case Step.
-apply Irrelevance-Env-for-ValueTyping-R to Typing1 H2 with EnvR' = EnvR'.
-apply TypeOf-updateR to TypeOfR Typing2 H3 H1.
-exists EnvH.
-exists EnvR'.
+%% slight modificaiton
+Beginsmove: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedV: apply Typing1. 
+TypingInsertedE: apply Typing2. 
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV _ with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR TypingInsertedE Tmp Prem0.
+witness EnvH.
+witness EnvR'.
 split.
-  search.
-  search.
-  backchain TypeOf-irrelevanceOfEnv-H.
-  search.
+search.
+backchain Type-state-envs-weakening-H.
+backchain TypeOf-irrelevanceOfEnv-H.
+search.
 /* ################################### store ############################################# */
 Beginstore: apply Step.
 Prem0: case Step(keep).
@@ -541,39 +561,52 @@ apply Find-type-in-envR to Prem1 TypeOfR Typing2.
 case H5.
 case H6.
 /* ################################### jmp ############################################# */
-Beginjmp: apply Step.
- case Typing0.
-Prem0: case Step.
-Prem1: case H1.
-apply Find-type-in-envH to 
-Prem0 typeOfHNEW Prem1.
-case H2.
-witness EnvH.
-witness EnvR.
-split.
-search.
-search.
-search.
+% slight modification: added extra case on LookupInsertedL
+Beginsjmp: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedL: apply Typing0. 
+LookupInsertedL: case TypingInsertedL(keep).  
+LookupInsertedLCase: case LookupInsertedL.
+TypingInsertedcode: apply Find-type-in-envH to Prem0 typeOfHNEW LookupInsertedLCase with EnvR = EnvR.  
+case TypingInsertedcode(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-irrelevanceOfEnv-H.  
 search.
 /* ################################### bnz ############################################# */
-Beginbnz: apply Step.
-case Typing1.
-case H1.
-case Step.
-case Step.
-witness EnvH.
-witness EnvR.
-split.
-search.
-apply Find-type-in-envH to H4 typeOfHNEW H2.
-case H5.
-search.
-search.
-search.
-witness EnvH.
-witness EnvR.
-split.
-search.
-search.
-search.
+% slight modification: added extra case on LookupInsertedL
+Beginsbnz: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZs: apply Typing0. 
+TypingInsertedL: apply Typing1. 
+TypingInsertedE2: apply Typing2. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedzero: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+case TypingInsertedzero(keep).  
+LookupInsertedL: case TypingInsertedL(keep).  
+LookupInsertedLCase: case LookupInsertedL.
+TypingInsertedcode: apply Find-type-in-envH to Prem1 typeOfHNEW LookupInsertedLCase with EnvR = EnvR.  
+case TypingInsertedcode(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-irrelevanceOfEnv-H.  
+search.  
+TypingInsertedZs: apply Typing0. 
+TypingInsertedL: apply Typing1. 
+TypingInsertedE: apply Typing2. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedone: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+case TypingInsertedone(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-irrelevanceOfEnv-H.  
 search.
