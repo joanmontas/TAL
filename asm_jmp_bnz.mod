@@ -1,4 +1,4 @@
-module asm.
+module asm_jmp_bnz.
 
 %% map H
 lookupEnvH (consEnvH L T EnvH) L T.
@@ -36,6 +36,7 @@ updateMapR (consMapR L1 E1 MU) L E' (consMapR L1 E1 MU') :- updateMapR MU L E' M
 
 
 typeOf Gamma EnvH EnvR (zero) (int).
+typeOf Gamma EnvH EnvR (one) (int).
 typeOf Gamma EnvH EnvR (halt) (unitT).
 
 typeOf Gamma EnvH EnvR (add Zd Zs E1 E2) (unitT) :- 
@@ -77,6 +78,18 @@ typeOf Gamma EnvH EnvR (store Zd Zs E) (unitT) :-
 	lookupEnvR EnvR Zs T, 
 	typeOf Gamma EnvH EnvR E (unitT). 
 
+typeOf Gamma EnvH EnvR (jmp E) (unitT) :- 
+	typeOf Gamma EnvH EnvR E (refH (codeT EnvR)). 
+
+typeOf Gamma EnvH EnvR (bnz Zs E1 E2) (unitT) :- 
+	lookupEnvR EnvR Zs (int), 
+	typeOf Gamma EnvH EnvR E1 (refH (codeT EnvR)), 
+	typeOf Gamma EnvH EnvR E2 (unitT). 
+
+typeOf Gamma EnvH EnvR (code EnvR' E) (codeT EnvR') :- 
+	typeOf Gamma EnvH EnvR' E (unitT). 
+
+
 typeOf Gamma EnvH EnvR (labelH L) (refH T) :- lookupEnvH EnvH L T.
 
 step (add Zd Zs V1 E) H R E H R' :- 
@@ -111,8 +124,20 @@ step (store Zd Zs E) H R E H' R :-
 	lookupMapR R Zs V, 
 	updateMapH H L V H'. 
 
+step (jmp (labelH L)) H R E H R :- 
+	lookupMapH H L (code EnvR E).
+
+step (bnz Zs (labelH L) E2) H R E1 H R :- 
+	lookupMapR R Zs (zero), 
+	lookupMapH H L (code EnvR E1).
+
+step (bnz Zs (labelH L) E) H R E H R :- 
+	lookupMapR R Zs (one).
+
+
 value (halt).
 value (zero).
+value (one).
 value (labelH L).
 
 addition zero zero zero. 

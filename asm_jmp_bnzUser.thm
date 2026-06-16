@@ -1,0 +1,24 @@
+Specification "asm_jmp_bnz". 
+
+Theorem Find-type-user-defined-addition: 
+	%assert 
+	forall EnvH EnvR V1 V2 V3, 
+	{addition V1 V2 V3} -> 
+	{typeOf nilEnvT EnvH EnvR V1 int} -> 
+	{typeOf nilEnvT EnvH EnvR V2 int} -> 
+	{typeOf nilEnvT EnvH EnvR V3 int}. 
+intros. 
+case H1. 
+search. 
+
+Theorem Find-type-user-defined-multiplication: 
+	%assert 
+	forall EnvH EnvR V1 V2 V3, 
+	{multiplication V1 V2 V3} -> 
+	{typeOf nilEnvT EnvH EnvR V1 int} -> 
+	{typeOf nilEnvT EnvH EnvR V2 int} -> 
+	{typeOf nilEnvT EnvH EnvR V3 int}. 
+intros. 
+case H1. 
+search. 
+

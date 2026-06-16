@@ -1,5 +1,5 @@
-Specification "asm". 
-Import "asmUser". 
+Specification "asm_jmp_bnz". 
+Import "asm_jmp_bnzUser". 
 
 Theorem Lookup-store-weakening-H: forall env, forall env', forall l, forall t, {subsetEnvH env env'} -> {lookupEnvH env l t} -> {lookupEnvH env' l t}. 
 IH0 : induction on 1. intros Main Lookup. Subset: case Main.  
@@ -15,6 +15,7 @@ IH0 : induction on 1. intros Main Subset. case Main.
  search.  
  Subset2 : assert {subsetEnvH EnvH (consEnvH L T Rest)}.  
  Typing0: case Main(keep).  
+ search.  
  search.  
  search.  
  Madd: apply IH0 to Typing2 Subset2.  
@@ -33,6 +34,13 @@ IH0 : induction on 1. intros Main Subset. case Main.
  search.  
  Mstore: apply IH0 to Typing2 Subset2.  
  search.  
+ Mjmp: apply IH0 to Typing0 Subset2.  
+ search.  
+ Mbnz: apply IH0 to Typing1 Subset2.  
+ Mbnz: apply IH0 to Typing2 Subset2.  
+ search.  
+ Mcode: apply IH0 to Typing0 Subset2.  
+ search.  
  apply Lookup-store-weakening-H to Subset2 Typing0.  
  search. 
 
@@ -40,6 +48,8 @@ IH0 : induction on 1. intros Main Subset. case Main.
 Theorem Irrelevance-Env-for-ValueTyping-R: forall EnvH, forall EnvR, forall v, forall t, forall EnvR', {typeOf (nilEnvT) EnvH EnvR v t} -> {value v} -> {typeOf (nilEnvT) EnvH EnvR' v t}. 
 intros TypeOf ValueHyp.  
  case ValueHyp(keep).  
+ case TypeOf(keep).  
+ search.  
  case TypeOf(keep).  
  search.  
  case TypeOf(keep).  
@@ -335,12 +345,17 @@ intros Main.
  case H2(keep).  
  search.  
  case H2(keep).  
+ search.  
+ case H2(keep).  
  search. 
 
 
 Theorem Type-preservation: forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R', {typeOf (nilEnvT) EnvH EnvR e typ} -> typeOfH EnvH EnvR H -> typeOfR EnvH EnvR R -> {step e H R e' H' R'} -> exists EnvH', exists EnvR', {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' EnvR' e' typ} /\ typeOfH EnvH' EnvR' H' /\ typeOfR EnvH' EnvR' R'. 
 IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.  
  Beginszero: apply Step. 
+ Prem0: case Step(keep).  
+  
+ Beginsone: apply Step. 
  Prem0: case Step(keep).  
   
  Beginshalt: apply Step. 
@@ -474,6 +489,55 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
  search.  
+  
+ Beginsjmp: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedL: apply Typing0. 
+ LookupInsertedL: case TypingInsertedL(keep).  
+ TypingInsertedcode: apply Find-type-in-envH to Prem0 TypeOfH LookupInsertedL with EnvR = EnvR.  
+ case TypingInsertedcode(keep).  
+ witness EnvH.  
+ witness EnvR.  
+ split.  
+ search.  
+ backchain Type-state-envs-weakening-H.  
+ backchain TypeOf-irrelevanceOfEnv-H.  
+ search.  
+  
+ Beginsbnz: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedZs: apply Typing0. 
+ TypingInsertedL: apply Typing1. 
+ TypingInsertedE2: apply Typing2. 
+ LookupInsertedZs: apply TypingInsertedZs. 
+ TypingInsertedzero: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+ case TypingInsertedzero(keep).  
+ LookupInsertedL: case TypingInsertedL(keep).  
+ TypingInsertedcode: apply Find-type-in-envH to Prem1 TypeOfH LookupInsertedL with EnvR = EnvR.  
+ case TypingInsertedcode(keep).  
+ witness EnvH.  
+ witness EnvR.  
+ split.  
+ search.  
+ backchain Type-state-envs-weakening-H.  
+ backchain TypeOf-irrelevanceOfEnv-H.  
+ search.  
+ TypingInsertedZs: apply Typing0. 
+ TypingInsertedL: apply Typing1. 
+ TypingInsertedE: apply Typing2. 
+ LookupInsertedZs: apply TypingInsertedZs. 
+ TypingInsertedone: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+ case TypingInsertedone(keep).  
+ witness EnvH.  
+ witness EnvR.  
+ split.  
+ search.  
+ backchain Type-state-envs-weakening-H.  
+ backchain TypeOf-irrelevanceOfEnv-H.  
+ search.  
+  
+ Beginscode: apply Step. 
+ Prem0: case Step(keep).  
   
  BeginsL1: apply Step. 
  Prem0: case Step(keep).  

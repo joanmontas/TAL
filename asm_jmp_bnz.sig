@@ -1,4 +1,4 @@
-sig asm.
+sig asm_jmp_bnz.
 
 kind term type.
 kind typ type.
@@ -57,6 +57,7 @@ type unitT typ.
 type refH typ -> typ. 
 
 type zero term.
+type one term.
 type halt term.
 type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
@@ -65,6 +66,14 @@ type load register -> register -> term -> term.
 type malloc register -> term -> term -> term.
 type move register -> term -> term -> term.
 type store register -> register -> term -> term.
+
+
+type codeT envR -> typ. 
+type code envR -> term -> term.
+
+type jmp term -> term.
+type bnz register -> term -> term -> term.
+
 
 type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.
