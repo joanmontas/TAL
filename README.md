@@ -8,3 +8,5 @@ The mechanized proof has been obtained by editing the asm_jmp_bnz.thm proof that
 The mechanized proof contains comments were modifications/additions have been needed.
 
 [1] From system F to typed assembly language. Greg Morrisett, David Walker, Karl Crary, Neal Glew. TOPLAS, Volume 21, Issue 3, Pages 527 - 568, 1999
+
+    https://www.cs.princeton.edu/~dpw/papers/tal-toplas.pdf

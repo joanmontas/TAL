@@ -35,8 +35,7 @@ updateMapR (consMapR L1 E1 MU) L E' (consMapR L1 E1 MU') :- updateMapR MU L E' M
 
 
 
-typeOf Gamma EnvH EnvR (zero) (int).
-typeOf Gamma EnvH EnvR (one) (int).
+typeOf Gamma EnvH EnvR (num I) (int).
 typeOf Gamma EnvH EnvR (halt) (unitT).
 
 typeOf Gamma EnvH EnvR (add Zd Zs E1 E2) (unitT) :- 
@@ -128,18 +127,114 @@ step (jmp (labelH L)) H R E H R :-
 	lookupMapH H L (code EnvR E).
 
 step (bnz Zs (labelH L) E2) H R E1 H R :- 
-	lookupMapR R Zs (zero), 
+	lookupMapR R Zs (num i0), 
 	lookupMapH H L (code EnvR E1).
 
 step (bnz Zs (labelH L) E) H R E H R :- 
-	lookupMapR R Zs (one).
+	lookupMapR R Zs (num i1).
 
 
 value (halt).
-value (zero).
-value (one).
+value (num I).
 value (labelH L).
 
-addition zero zero zero. 
-multiplication zero zero zero. 
+addition (num i0) (num i0) (num i0).
+addition (num i0) (num i1) (num i1).
+addition (num i0) (num i2) (num i2).
+addition (num i0) (num i3) (num i3).
+addition (num i0) (num i4) (num i4).
+addition (num i0) (num i5) (num i5).
+addition (num i0) (num i6) (num i6).
+addition (num i1) (num i0) (num i1).
+addition (num i1) (num i1) (num i2).
+addition (num i1) (num i2) (num i3).
+addition (num i1) (num i3) (num i4).
+addition (num i1) (num i4) (num i5).
+addition (num i1) (num i5) (num i6).
+addition (num i1) (num i6) (num i6).
+addition (num i2) (num i0) (num i2).
+addition (num i2) (num i1) (num i3).
+addition (num i2) (num i2) (num i4).
+addition (num i2) (num i3) (num i5).
+addition (num i2) (num i4) (num i6).
+addition (num i2) (num i5) (num i6).
+addition (num i2) (num i6) (num i6).
+addition (num i3) (num i0) (num i3).
+addition (num i3) (num i1) (num i4).
+addition (num i3) (num i2) (num i5).
+addition (num i3) (num i3) (num i6).
+addition (num i3) (num i4) (num i6).
+addition (num i3) (num i5) (num i6).
+addition (num i3) (num i6) (num i6).
+addition (num i4) (num i0) (num i4).
+addition (num i4) (num i1) (num i5).
+addition (num i4) (num i2) (num i6).
+addition (num i4) (num i3) (num i6).
+addition (num i4) (num i4) (num i6).
+addition (num i4) (num i5) (num i6).
+addition (num i4) (num i6) (num i6).
+addition (num i5) (num i0) (num i5).
+addition (num i5) (num i1) (num i6).
+addition (num i5) (num i2) (num i6).
+addition (num i5) (num i3) (num i6).
+addition (num i5) (num i4) (num i6).
+addition (num i5) (num i5) (num i6).
+addition (num i5) (num i6) (num i6).
+addition (num i6) (num i0) (num i6).
+addition (num i6) (num i1) (num i6).
+addition (num i6) (num i2) (num i6).
+addition (num i6) (num i3) (num i6).
+addition (num i6) (num i4) (num i6).
+addition (num i6) (num i5) (num i6).
+addition (num i6) (num i6) (num i6).
+
+multiplication(num i0) (num i0) (num i0).
+multiplication(num i0) (num i1) (num i0).
+multiplication(num i0) (num i2) (num i0).
+multiplication(num i0) (num i3) (num i0).
+multiplication(num i0) (num i4) (num i0).
+multiplication(num i0) (num i5) (num i0).
+multiplication(num i0) (num i6) (num i0).
+multiplication(num i1) (num i0) (num i0).
+multiplication(num i1) (num i1) (num i1).
+multiplication(num i1) (num i2) (num i2).
+multiplication(num i1) (num i3) (num i3).
+multiplication(num i1) (num i4) (num i4).
+multiplication(num i1) (num i5) (num i5).
+multiplication(num i1) (num i6) (num i6).
+multiplication(num i2) (num i0) (num i0).
+multiplication(num i2) (num i1) (num i2).
+multiplication(num i2) (num i2) (num i4).
+multiplication(num i2) (num i3) (num i6).
+multiplication(num i2) (num i4) (num i6).
+multiplication(num i2) (num i5) (num i6).
+multiplication(num i2) (num i6) (num i6).
+multiplication(num i3) (num i0) (num i0).
+multiplication(num i3) (num i1) (num i3).
+multiplication(num i3) (num i2) (num i6).
+multiplication(num i3) (num i3) (num i6).
+multiplication(num i3) (num i4) (num i6).
+multiplication(num i3) (num i5) (num i6).
+multiplication(num i3) (num i6) (num i6).
+multiplication(num i4) (num i0) (num i0).
+multiplication(num i4) (num i1) (num i4).
+multiplication(num i4) (num i2) (num i6).
+multiplication(num i4) (num i3) (num i6).
+multiplication(num i4) (num i4) (num i6).
+multiplication(num i4) (num i5) (num i6).
+multiplication(num i4) (num i6) (num i6).
+multiplication(num i5) (num i0) (num i0).
+multiplication(num i5) (num i1) (num i5).
+multiplication(num i5) (num i2) (num i6).
+multiplication(num i5) (num i3) (num i6).
+multiplication(num i5) (num i4) (num i6).
+multiplication(num i5) (num i5) (num i6).
+multiplication(num i5) (num i6) (num i6).
+multiplication(num i6) (num i0) (num i0).
+multiplication(num i6) (num i1) (num i6).
+multiplication(num i6) (num i2) (num i6).
+multiplication(num i6) (num i3) (num i6).
+multiplication(num i6) (num i4) (num i6).
+multiplication(num i6) (num i5) (num i6).
+multiplication(num i6) (num i6) (num i6).
 

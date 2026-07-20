@@ -1,6 +1,6 @@
 Specification "tal". 
 Import "talUser". 
-/* ------------------------------------------------------------------------------- */
+/*  ------------------------------------------------------------------------------- */
 %% match
 Theorem Lookup-store-weakening-H:
   forall env, forall env', forall l, forall t,
@@ -20,7 +20,6 @@ Theorem typeOfW-weakening-H :
     {typeOfW gamma EnvH' EnvR e t fl}.
 intros Main Subset.
   case Main. 
-  search.
 search.
   search.
   apply Lookup-store-weakening-H to Subset H1.
@@ -76,7 +75,6 @@ Theorem Irrelevance-Env-for-ValueTyping-R:
 intros TypeOf ValueHyp.  
  case TypeOf(keep).
 case H1.
-search.
 search.
 search.
 search.
@@ -416,7 +414,6 @@ case H2(keep).
 case H2(keep).
 case H2(keep).
 case H2(keep).
-case H2(keep).
 /* ------------------------------------------------------------------------------- */
 % modification: removed necesary cases such as beginsone, beginzero
 Theorem Type-preservation:
@@ -445,7 +442,6 @@ TypingInsertedV1: apply Typing2.
 TypingInsertedE: apply Typing3. 
 LookupInsertedZs: apply TypingInsertedZs. 
 TypingInsertedV2: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
- 
 TypingInsertedV3: apply Find-type-user-defined-addition to Prem1 TypingInsertedV1 TypingInsertedV2.
 Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.
 TypeOfR': apply TypeOf-updateR to TypeOfR Typing3 Tmp Prem2.
@@ -511,22 +507,22 @@ search.
 /* ################################### malloc ############################################# */
 Beginmalloc: apply Step.
 Prem0: case Step(keep).
-witness (consEnvH LNewH (arrayT T1 zero T2 zero) EnvH).
+witness (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH).
 witness EnvR'.
 split.
 search.
-SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 zero T2 zero) EnvH)}.
+SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH)}.
 apply Type-state-envs-weakening-H to Typing2 SubFact.
 search.
 HNEW_R': apply TypeOf-irrelevanceOfEnv-H to typeOfHNEW with EnvR' = EnvR'.
-ArrTyp: assert {typeOfH nilEnvT EnvH EnvR' (array (junk T1) (junk T2)) (arrayT T1 zero T2 zero)}.
+ArrTyp: assert {typeOfH nilEnvT EnvH EnvR' (array (junk T1) (junk T2)) (arrayT T1 i0 T2 i0)}.
 HNEW_Ext: apply TypeOf-weakening-H to HNEW_R' ArrTyp with l = LNewH.
 apply TypeOf-addH to Prem0 HNEW_Ext.
 search.
 case Prem0.
-Reg_Ext: apply Irrelevance-TypeOf-with-ExtensionsOfEnv-R to TypeOfR with L = L, T = (arrayT T1 zero T2 zero).
-PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 zero T2 zero) EnvH) EnvR' (labelH (succLabelH L)) (refH (arrayT T1 
-zero T2 zero))}.
+Reg_Ext: apply Irrelevance-TypeOf-with-ExtensionsOfEnv-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0).
+PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0) EnvH) EnvR' (labelH (succLabelH L)) (refH (arrayT T1 
+i0 T2 i0))}.
 apply TypeOf-updateR to Reg_Ext Typing1 PtrTyp Prem1.
 search.
 /* ################################### move ############################################# */

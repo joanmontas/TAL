@@ -35,6 +35,10 @@ kind register type.
 
 type r1 register. 
 type r2 register. 
+type r3 register. 
+type r4 register. 
+type r5 register. 
+type r6 register. 
 
 kind mapR type.
 type nilMapR mapR.
@@ -56,8 +60,6 @@ type int typ.
 type unitT typ.
 type refH typ -> typ. 
 
-type zero term.
-type one term.
 type halt term.
 type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
@@ -78,6 +80,16 @@ type bnz register -> term -> term -> term.
 type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.
 type typeOf envT -> envH -> envR -> term -> typ -> o.
+
+kind finiteInteger type.
+type num finiteInteger -> term.
+type  i0 finiteInteger. 
+type  i1 finiteInteger. 
+type  i2 finiteInteger. 
+type  i3 finiteInteger. 
+type  i4 finiteInteger. 
+type  i5 finiteInteger. 
+type  i6 finiteInteger. 
 
 type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
