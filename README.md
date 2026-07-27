@@ -8,3 +8,12 @@ The mechanized proof has been obtained by editing the proof of <b>asm_jmp_bnz</b
 <br>The mechanized proof <b>asm_jmp_bnz.thm</b> contains comments were modifications/additions have been needed.
 
 [1] [From System F to Typed Assembly Language](https://www.cs.princeton.edu/~dpw/papers/tal-toplas.pdf). Greg Morrisett, David Walker, Karl Crary, Neal Glew. TOPLAS, Volume 21, Issue 3, Pages 527 - 568, 1999
+
+
+<br><br>
+To manually check: 
+<ul>
+<li> make sure you possess the dependencies stated in [Lang-n-Prove](https://github.com/mcimini/lang-n-prove-state/).
+<li> To check <b>asm_jmp_bnz</b>, run: <b>abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm</b>
+<li> To check our <b>tal</b>, run: <b>abella talUser.thm -c talUser.thc ; abella tal.thm</b>
+</li>ul
