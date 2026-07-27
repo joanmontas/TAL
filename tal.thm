@@ -413,7 +413,6 @@ case H3(keep).
 case H2(keep).
 case H2(keep).
 case H2(keep).
-case H2(keep).
 /* ------------------------------------------------------------------------------- */
 % modification: removed necesary cases such as beginsone, beginzero
 Theorem Type-preservation:

@@ -51,8 +51,6 @@ intros TypeOf ValueHyp.
  search.  
  case TypeOf(keep).  
  search.  
- case TypeOf(keep).  
- search. 
 
 
 Define typeOfH: envH -> envR -> mapH -> prop by
@@ -360,8 +358,6 @@ intros Main.
  search.  
  case H2(keep).  
  search.  
- case H2(keep).  
- search. 
 
 
 Theorem TypeOf-irrelevanceOfEnv-R: forall EnvH, forall EnvR, forall map, typeOfR EnvH EnvR map -> typeOfR EnvH EnvR map. 
