@@ -15,9 +15,8 @@ To manually check:
 <ul>
 <li> make sure you possess the dependencies stated in [Lang-n-Prove](https://github.com/mcimini/lang-n-prove-state/).</li>
 <li> To check <b>asm_jmp_bnz</b>, run:   
-```bash
-  abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm
-```
+
+  `abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm`
 </li>
 <li> To check <b>tal</b>, run: 
 ```
