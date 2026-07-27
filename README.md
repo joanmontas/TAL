@@ -1,6 +1,6 @@
-# Mechanized Proof of _a_ Typed Assembly Language
+# Mechanized Proof of a Typed Assembly Language
 
-*Mechanized Proof of _a_ Typed Assembly Language.*
+*Mechanized Proof of a Typed Assembly Language.*
 
 Typed Assembly Language: TAL of Morrisett et al. [1] without existential types and where jumps specify a type for each register (and not just those that are going to be used). 
 
