@@ -1,4 +1,4 @@
-# TAL
+# Mechanized Proof of _a_ Typed Assembly Language
 
 *Mechanized Proof of _a_ Typed Assembly Language.*
 
