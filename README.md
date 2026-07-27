@@ -19,8 +19,7 @@ To manually check:
   `abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm`
 </li>
 <li> To check <b>tal</b>, run: 
-```
-  abella talUser.thm -c talUser.thc ; abella tal.thm
-```
+
+  `abella talUser.thm -c talUser.thc ; abella tal.thm`
 </li>
 </ul>
