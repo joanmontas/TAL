@@ -204,7 +204,7 @@ apply Type-state-envs-weakening-H to H1 Subset.
   search.
 /* ------------------------------------------------------------------------------- */
 %% modification: typeOfHNEW and extra
-Theorem TypeOf-weakening-H:  
+Theorem TypeOf-extend-prelim-H:  
     forall envH envR map E T l,  
       typeOfHNEW envH envR map ->  
       {typeOfH nilEnvT envH envR E T} ->  
@@ -245,7 +245,7 @@ Theorem Store-stores-values-H :
 skip.
 /* ------------------------------------------------------------------------------- */
 %% slight modification: backchain typeOfV-weakening-H. instead of backchain Type-state-envs-weakening-H.
-Theorem Irrelevance-TypeOf-with-ExtensionsOfEnv-H: 
+Theorem TypeOf-weakening-for-extns-H: 
  	forall EnvH EnvR L T R,
  	typeOfR EnvH EnvR R ->
  	typeOfR (consEnvH (succLabelH L) T EnvH) EnvR R.
@@ -386,7 +386,7 @@ Theorem TypeOf-updateR:
     backchain Irrelevance-Env-for-ValueTyping-R.
 /* ------------------------------------------------------------------------------- */
 %% slight modification: backchain typeOfV-weakening-H. instead of backchain Type-state-envs-weakening-H.
- Theorem Irrelevance-TypeOf-with-ExtensionsOfEnv-R: 
+ Theorem TypeOf-weakening-for-extns-R: 
  	forall EnvH EnvR L T R,
  	typeOfR EnvH EnvR R ->
  	typeOfR (consEnvH (succLabelH L) T EnvH) EnvR R.
@@ -398,7 +398,7 @@ Theorem TypeOf-updateR:
   backchain typeOfV-weakening-H.
 /* ------------------------------------------------------------------------------- */
 %% slight modification: typeOfHNEW
-Theorem TypeOf-irrelevanceOfEnv-H: 
+Theorem TypeOf-weakening-H: 
   forall EnvH, forall EnvR, forall map, forall EnvR',
   typeOfHNEW EnvH EnvR map ->
   typeOfHNEW EnvH EnvR' map.
@@ -449,7 +449,7 @@ witness EnvR'.
 split.  
 search.  
 backchain Type-state-envs-weakening-H.  
-backchain TypeOf-irrelevanceOfEnv-H.  
+backchain TypeOf-weakening-H.  
 search.
 /* ################################### mult ############################################# */
 %% match
@@ -470,7 +470,7 @@ witness EnvR'.
 split.  
 search.  
 backchain Type-state-envs-weakening-H.  
-backchain TypeOf-irrelevanceOfEnv-H.  
+backchain TypeOf-weakening-H.  
 search.
 /* ################################### load ############################################# */
 Beginload: apply Step.
@@ -490,7 +490,7 @@ witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-irrelevanceOfEnv-H.
+backchain TypeOf-weakening-H.
 search.
 case Typing2.
 assert {typeOfV nilEnvT EnvH EnvR V' T}.
@@ -501,7 +501,7 @@ witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-irrelevanceOfEnv-H.
+backchain TypeOf-weakening-H.
 search.
 /* ################################### malloc ############################################# */
 Beginmalloc: apply Step.
@@ -513,13 +513,13 @@ search.
 SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH)}.
 apply Type-state-envs-weakening-H to Typing2 SubFact.
 search.
-HNEW_R': apply TypeOf-irrelevanceOfEnv-H to typeOfHNEW with EnvR' = EnvR'.
+HNEW_R': apply TypeOf-weakening-H to typeOfHNEW with EnvR' = EnvR'.
 ArrTyp: assert {typeOfH nilEnvT EnvH EnvR' (array (junk T1) (junk T2)) (arrayT T1 i0 T2 i0)}.
-HNEW_Ext: apply TypeOf-weakening-H to HNEW_R' ArrTyp with l = LNewH.
+HNEW_Ext: apply TypeOf-extend-prelim-H to HNEW_R' ArrTyp with l = LNewH.
 apply TypeOf-addH to Prem0 HNEW_Ext.
 search.
 case Prem0.
-Reg_Ext: apply Irrelevance-TypeOf-with-ExtensionsOfEnv-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0).
+Reg_Ext: apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0).
 PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0) EnvH) EnvR' (labelH (succLabelH L)) (refH (arrayT T1 
 i0 T2 i0))}.
 apply TypeOf-updateR to Reg_Ext Typing1 PtrTyp Prem1.
@@ -538,7 +538,7 @@ witness EnvR'.
 split.
 search.
 backchain Type-state-envs-weakening-H.
-backchain TypeOf-irrelevanceOfEnv-H.
+backchain TypeOf-weakening-H.
 search.
 /* ################################### store ############################################# */
 Beginstore: apply Step.
@@ -569,7 +569,7 @@ witness EnvR.
 split.  
 search.  
 backchain Type-state-envs-weakening-H.  
-backchain TypeOf-irrelevanceOfEnv-H.  
+backchain TypeOf-weakening-H.  
 search.
 /* ################################### bnz ############################################# */
 % slight modification: added extra case on LookupInsertedL
@@ -590,7 +590,7 @@ witness EnvR.
 split.  
 search.  
 backchain Type-state-envs-weakening-H.  
-backchain TypeOf-irrelevanceOfEnv-H.  
+backchain TypeOf-weakening-H.  
 search.  
 TypingInsertedZs: apply Typing0. 
 TypingInsertedL: apply Typing1. 
@@ -603,5 +603,5 @@ witness EnvR.
 split.  
 search.  
 backchain Type-state-envs-weakening-H.  
-backchain TypeOf-irrelevanceOfEnv-H.  
+backchain TypeOf-weakening-H.  
 search.
