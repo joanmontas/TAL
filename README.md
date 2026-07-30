@@ -26,8 +26,10 @@ The mechanized proof of <b>tal2</b> has been obtained by editing the proof of <b
 <br>
 
 ## <b>To Manually Check:</b> 
+
+Make sure you possess the Abella proof assistant tool in the version stated in the dependencies of <a href="https://github.com/mcimini/lang-n-prove-state/">Lang-n-Prove</a>.</li>
+
 <ul>
-<li> Make sure you possess the Abella proof assistant tool in the version stated in the dependencies of <a href="https://github.com/mcimini/lang-n-prove-state/">Lang-n-Prove</a>.</li>
 <li> For <b>asm_jmp_bnz</b>, run:   
 
   `abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm`
