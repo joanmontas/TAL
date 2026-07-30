@@ -1,6 +1,6 @@
 # Mechanized Proof of a Typed Assembly Language
 
-## <b>asm_jmp_bnz</b>
+## asm_jmp_bnz
 
 A "simple typed assembly language" (we refer to it sometimes as STAL) in the style of TAL of Morrisett et al. [1] and derived from simplification of TAL of Morrisett et al. [1], with addition/multiplication, load/store, move, malloc, conditional and unconditional jumps.  
 </br>
