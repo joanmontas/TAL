@@ -32,8 +32,12 @@ The mechanized proof of <b>tal2</b> has been obtained by editing the proof of <b
 
   `abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm`
 </li>
-<li> For <b>tal</b>, run: 
+<li> For <b>tal1</b>, run: 
 
-  `abella talUser.thm -c talUser.thc ; abella tal.thm`
+  `abella ta1lUser.thm -c ta1lUser.thc ; abella tal1.thm`
+</li>
+<li> For <b>tal2</b>, run: 
+
+  `abella ta2lUser.thm -c ta2lUser.thc ; abella tal2.thm`
 </li>
 </ul>
