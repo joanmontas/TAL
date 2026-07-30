@@ -1,0 +1,607 @@
+Specification "tal1". 
+Import "tal1User". 
+/*  ------------------------------------------------------------------------------- */
+%% match
+Theorem Lookup-store-weakening-H:
+  forall env, forall env', forall l, forall t,
+    {subsetEnvH env env'} ->
+    {lookupEnvH env l t} ->
+    {lookupEnvH env' l t}.
+IH0 : induction on 1. intros Main Lookup. Subset: case Main.
+ search.
+ apply IH0 to Subset Lookup.
+ search.
+/* ------------------------------------------------------------------------------- */
+%% added to match new typeof "W"
+Theorem typeOfW-weakening-H :
+  forall gamma EnvH EnvR e t fl EnvH',
+    {typeOfW gamma EnvH EnvR e t fl} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOfW gamma EnvH' EnvR e t fl}.
+intros Main Subset.
+  case Main. 
+search.
+  search.
+  apply Lookup-store-weakening-H to Subset H1.
+  search.
+/* ------------------------------------------------------------------------------- */
+%% added to match new typeof "V"
+Theorem typeOfV-weakening-H :
+  forall gamma EnvH EnvR e t EnvH',
+    {typeOfV gamma EnvH EnvR e t} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOfV gamma EnvH' EnvR e t}.
+intros Main Subset.
+  case Main.
+  apply typeOfW-weakening-H to H1 Subset.
+  search.
+/* ------------------------------------------------------------------------------- */
+%% slight modification
+Theorem Type-state-envs-weakening-H:
+  forall gamma, forall EnvH, forall EnvR, forall e, forall t, forall EnvH',
+    {typeOf gamma EnvH EnvR e t} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOf gamma EnvH' EnvR e t}.
+IH0 : induction on 1. intros Main Subset.
+Typing0: case Main(keep). 
+search.
+MaddV: apply typeOfV-weakening-H to Typing2 Subset.
+Madd: apply IH0 to Typing4 Subset.  
+search.  
+MmultV: apply typeOfV-weakening-H to Typing2 Subset.  
+Mmult: apply IH0 to Typing4 Subset.  
+search.
+Mload: apply IH0 to Typing4 Subset.  
+search.  
+Mmalloc: apply IH0 to Typing2 Subset.  
+search.  
+MmoveV: apply typeOfV-weakening-H to Typing1 Subset.
+Mmove: apply IH0 to Typing3 Subset.  
+search.  
+Mstore: apply IH0 to Typing5 Subset.  
+search.  
+MjmpV: apply typeOfV-weakening-H to Typing0 Subset.
+search.  
+MbnzV: apply typeOfV-weakening-H to Typing1 Subset.  
+Mbnz: apply IH0 to Typing2 Subset.  
+search.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: removed unnecesary case analysis on typeof
+Theorem Irrelevance-Env-for-ValueTyping-R: 
+  forall EnvH, forall EnvR, forall v, forall t, forall EnvR',
+  {typeOfV (nilEnvT) EnvH EnvR v t} -> 
+  {value v} -> 
+  {typeOfV (nilEnvT) EnvH EnvR' v t}.
+intros TypeOf ValueHyp.  
+ case TypeOf(keep).
+case H1.
+search.
+search.
+search.
+/* ------------------------------------------------------------------------------- */
+
+Define typeOfHNEW: envH -> envR -> mapH -> prop by
+typeOfHNEW EnvH EnvR MapH := forall l, forall t, 
+{lookupEnvH EnvH l t} -> 
+exists e, {lookupMapH MapH l e} /\ {typeOfH (nilEnvT) EnvH EnvR e t}.
+
+Define typeOfR: envH -> envR -> mapR -> prop by
+typeOfR EnvH EnvR MapR := forall l, forall t, 
+{lookupEnvR EnvR l t} -> 
+exists e, {lookupMapR MapR l e} /\ {typeOfV (nilEnvT) EnvH EnvR e t}.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Uniqueness-of-lookupMap-H : 
+  forall map L e1 e2, 
+  {lookupMapH map L e1} -> 
+  {lookupMapH map L e2} -> 
+  e1 = e2.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Uniqueness-of-lookupMap-R : 
+  forall map L e1 e2, 
+  {lookupMapR map L e1} -> 
+  {lookupMapR map L e2} -> 
+  e1 = e2.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: accounts for new Define typeOfHNEW
+Theorem Find-type-in-envR :
+    forall EnvH EnvR map L e T,
+    {lookupMapR map L e} ->
+    typeOfR EnvH EnvR map ->
+    {lookupEnvR EnvR L T} ->
+    {typeOfV (nilEnvT) EnvH EnvR e T}.
+intros Lookup typeOfHNEW LookupEnv.
+	case typeOfHNEW(keep).
+	apply H1 to LookupEnv.
+	apply Uniqueness-of-lookupMap-R to Lookup H2.
+	search.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Uniqueness-of-lookupEnv-H : 
+  forall env L e1 e2, 
+  {lookupEnvH env L e1} -> 
+  {lookupEnvH  env L e2} -> 
+  e1 = e2.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem excluded_middle_labels-H : 
+  forall (l1 :labelH) l2, 
+  (l1 = l2) \/ (l1 = l2 -> false).
+skip.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem update_implies_lookup-H :
+  forall map l map' e,
+  {updateMapH map l e map'} -> {lookupMapH map' l e}.
+induction on 1. intros Main.
+  StUpdate : case Main.
+  search.
+  apply IH to StUpdate. search.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem inequality_contradiction-H : 
+  forall (l : labelH),
+    (l = l -> false) ->
+    false.
+intros Contra. Equal : assert l = l. apply Contra to Equal.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem lookup_when_inequal_labels-H:
+  forall l1 l2 map map' e1 e2,
+    (l1 = l2 -> false) ->
+    {updateMapH map l1 e1 map'}    ->
+    {lookupMapH map l2 e2} ->
+    {lookupMapH map' l2 e2}.
+induction on 2.
+  intros Lanld STupdate STlookup.
+  STupdate : case STupdate.
+      case STlookup.
+          apply inequality_contradiction-H to Lanld.
+          search.
+STlookup : case STlookup.
+          search.
+          apply IH to Lanld STupdate STlookup. search.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: typeOfHNEW
+Theorem TypeOf-updateH: 
+    forall envH envR map map' e T L,
+      typeOfHNEW envH envR map ->
+	  	{lookupEnvH envH L T} ->
+    {typeOfH nilEnvT envH envR e T} ->
+      {updateMapH map L e map'} ->
+      typeOfHNEW envH envR map'.
+intros typeOfHNEW LookupEnv TypeOfE Update. 
+	  typeOfHNEWExpanded: case typeOfHNEW.
+	  unfold.
+	  intros LookupEnvHOfGoal.
+Landl : apply excluded_middle_labels-H with l1 = L, l2 = l.
+	  Landl : case Landl.
+% l = L
+	  apply Uniqueness-of-lookupEnv-H to LookupEnvHOfGoal LookupEnv.
+	  apply update_implies_lookup-H to Update.
+	  search.
+% l != L
+	  LookupMap : apply typeOfHNEWExpanded to LookupEnvHOfGoal.
+	  apply lookup_when_inequal_labels-H to Landl Update LookupMap.
+	  search.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: typeOfH
+Theorem typeOfH-weakening-H :
+  forall gamma EnvH EnvR e t EnvH',
+    {typeOfH gamma EnvH EnvR e t} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOfH gamma EnvH' EnvR e t}.
+intros Main Subset. case Main.
+  apply typeOfW-weakening-H to H1 Subset.
+  apply typeOfW-weakening-H to H2 Subset.
+  search.
+apply Type-state-envs-weakening-H to H1 Subset.
+  search.
+/* ------------------------------------------------------------------------------- */
+%% modification: typeOfHNEW and extra
+Theorem TypeOf-extend-prelim-H:  
+    forall envH envR map E T l,  
+      typeOfHNEW envH envR map ->  
+      {typeOfH nilEnvT envH envR E T} ->  
+      typeOfHNEW (consEnvH l T envH)  envR (consMapH l E map).
+intros TypeOfH TypeOfE.
+TypeOfHExpanded: case TypeOfH.
+unfold.
+intros LookupEnv.
+LookupEnv: case LookupEnv.
+  witness E. split.
+  search.
+  SubsetEnvH: assert {subsetEnvH envH (consEnvH l1 t envH)}.
+  apply typeOfH-weakening-H to TypeOfE SubsetEnvH.
+  search.
+  TypeOfHFormulae0: apply TypeOfHExpanded to LookupEnv.
+  witness e. 
+  split.
+  search. 
+  SubsetEnvH: assert {subsetEnvH envH (consEnvH l T envH)}.
+  apply typeOfH-weakening-H to TypeOfHFormulae1 SubsetEnvH. 
+  search.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: typeOfHNEW
+Theorem TypeOf-addH : 
+  forall map E map' L T env envR,  
+  {addMapH map E map' L} -> 
+  typeOfHNEW (consEnvH L T env) envR (consMapH L E map) ->
+  typeOfHNEW (consEnvH L T env) envR map'.
+induction on 1. intros Main Lookup.
+  Subset: case Main.
+  search.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Store-stores-values-H : 
+	  	forall map l e,
+	  	{lookupMapH map l e} -> 
+	  	{value e}.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: backchain typeOfV-weakening-H. instead of backchain Type-state-envs-weakening-H.
+Theorem TypeOf-weakening-for-extns-H: 
+ 	forall EnvH EnvR L T R,
+ 	typeOfR EnvH EnvR R ->
+ 	typeOfR (consEnvH (succLabelH L) T EnvH) EnvR R.
+	intros TypeOfR.
+TypeOfRExpanded: case TypeOfR. 
+unfold. intros LookupFromGoal.
+FromTypeOfR : apply TypeOfRExpanded to LookupFromGoal. 
+exists e. split. search. 
+backchain typeOfV-weakening-H.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: typeOfHNEW
+Theorem Find-type-in-envH :
+    forall EnvH EnvR map L e T,
+    {lookupMapH map L e} ->
+    typeOfHNEW EnvH EnvR map ->
+    {lookupEnvH EnvH L T} ->
+    {typeOfH (nilEnvT) EnvH EnvR e T}.
+intros Lookup TypeH LookupEnv.
+  case TypeH(keep).
+  apply H1 to LookupEnv.
+  apply Uniqueness-of-lookupMap-H to Lookup H2.
+  search.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Uniqueness-of-lookupEnv-R : 
+  forall env L e1 e2, 
+  {lookupEnvR env L e1} -> 
+  {lookupEnvR  env L e2} -> 
+  e1 = e2.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem excluded_middle_labels-R : 
+  forall (l1 :register) l2, 
+  (l1 = l2) \/ (l1 = l2 -> false).
+skip.
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem update_implies_lookup-R :
+  forall map l map' e,
+  {updateMapR map l e map'} ->
+  {lookupMapR map' l e}.
+induction on 1. intros Main.
+  StUpdate : case Main.
+  search.
+  apply IH to StUpdate. search.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem update_implies_lookupEnv-R : 
+  forall env l T env',
+  {updateEnvR env l T env'} ->
+  {lookupEnvR env' l T}.
+induction on 1. intros Main.
+  StUpdate : case Main.
+  search.
+  apply IH to StUpdate. search.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem inequality_contradiction-R : 
+  forall (l : register),
+    (l = l -> false) ->
+    false.
+intros Contra. Equal : assert l = l. apply Contra to Equal.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem lookup_when_inequal_labels-R :
+  forall l1 l2 map map' e1 e2,
+    (l1 = l2 -> false) ->
+    {updateMapR map l1 e1 map'}    ->
+    {lookupMapR map l2 e2} ->
+    {lookupMapR map' l2 e2}.
+induction on 2.
+  intros Lanld STupdate STlookup.
+  STupdate : case STupdate.
+      case STlookup.
+          apply inequality_contradiction-R to Lanld.
+          search.
+STlookup : case STlookup.
+          search.
+          apply IH to Lanld STupdate STlookup. search.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem lookup_when_inequal_labels-pre-EnvR:
+		  forall l1 l2 map map' e1 e2,
+		    (l1 = l2 -> false) ->
+		    {updateEnvR map l1 e1 map'}    ->
+		    {lookupEnvR map' l2 e2} ->
+		    {lookupEnvR map l2 e2}.
+        induction on 2.
+        intros Lanld STupdate STlookup.
+          STupdate : case STupdate.
+            case STlookup.
+              apply inequality_contradiction-R to Lanld.
+              search.
+            STlookup : case STlookup.
+              search.
+              apply IH to Lanld STupdate STlookup. search.
+
+/* ------------------------------------------------------------------------------- */
+%% match
+Theorem Store-stores-values-R : 
+	  	forall map l e,
+	  	{lookupMapR map l e} -> 
+	  	{value e}.
+skip.
+/* ------------------------------------------------------------------------------- */
+%% slight modificaiton: typeOfHNEW and typeofV
+Theorem TypeOf-updateR: 
+    %assert 
+	forall envH mapR mapR' envR envR' e T L,
+    typeOfR envH envR mapR ->
+    {updateEnvR envR L T envR'} ->
+	{typeOfV nilEnvT envH envR' e T} ->
+    {updateMapR mapR L e mapR'} ->
+    typeOfR envH envR' mapR'.
+    intros typeOfHNEW LookupEnv TypeOfE Update. 
+    typeOfHNEWExpanded: case typeOfHNEW.
+    unfold.
+    intros LookupEnvHOfGoal.
+    Landl : apply excluded_middle_labels-R with l1 = L, l2 = l.
+    Landl : case Landl.
+    % l = L
+    apply update_implies_lookup-R to Update.
+    apply update_implies_lookupEnv-R to LookupEnv. 
+    apply Uniqueness-of-lookupEnv-R to LookupEnvHOfGoal H2.
+    search.
+    % l != L
+    LookkupFortypeOfHNEW : apply lookup_when_inequal_labels-pre-EnvR to Landl LookupEnv LookupEnvHOfGoal.
+    LookupMap : apply typeOfHNEWExpanded to LookkupFortypeOfHNEW.
+    apply lookup_when_inequal_labels-R to Landl Update LookupMap.
+    Value: apply Store-stores-values-R to LookupMap. 
+    exists e1. split.
+    search. 
+    backchain Irrelevance-Env-for-ValueTyping-R.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: backchain typeOfV-weakening-H. instead of backchain Type-state-envs-weakening-H.
+ Theorem TypeOf-weakening-for-extns-R: 
+ 	forall EnvH EnvR L T R,
+ 	typeOfR EnvH EnvR R ->
+ 	typeOfR (consEnvH (succLabelH L) T EnvH) EnvR R.
+	intros TypeOfR.
+  TypeOfRExpanded: case TypeOfR. 
+  unfold. intros LookupFromGoal.
+  FromTypeOfR : apply TypeOfRExpanded to LookupFromGoal. 
+  exists e. split. search. 
+  backchain typeOfV-weakening-H.
+/* ------------------------------------------------------------------------------- */
+%% slight modification: typeOfHNEW
+Theorem TypeOf-weakening-H: 
+  forall EnvH, forall EnvR, forall map, forall EnvR',
+  typeOfHNEW EnvH EnvR map ->
+  typeOfHNEW EnvH EnvR' map.
+intros Main.  
+TypeOfExpanded: case Main(keep).  
+unfold.  
+intros Main1.  
+apply TypeOfExpanded to Main1.  
+apply Store-stores-values-H to H1.  
+witness e.  
+case H3(keep).
+case H2(keep).
+case H2(keep).
+case H2(keep).
+/* ------------------------------------------------------------------------------- */
+% modification: removed necesary cases such as beginsone, beginzero
+Theorem Type-preservation:
+  forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R',
+  {typeOf (nilEnvT) EnvH EnvR e typ} ->
+  typeOfHNEW EnvH EnvR H -> 
+  typeOfR EnvH EnvR R ->
+  {step e H R e' H' R'} -> 
+  exists EnvH', exists EnvR', 
+  {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' EnvR' e' typ} /\ 
+  typeOfHNEW EnvH' EnvR' H' /\ typeOfR EnvH' EnvR' R'.
+IH0 : induction on 1. %% Perform Induction on the 1th premise
+intros Main typeOfHNEW TypeOfR Step.
+Typing0: case Main.
+/* ################################### halt ############################################# */
+%% match
+ Beginshalt: apply Step.
+ Prem0: case Step(keep).
+/* ################################### add ############################################# */
+%% match
+Beginadd: apply Step.
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedZs: apply Typing1. 
+TypingInsertedV1: apply Typing2. 
+TypingInsertedE: apply Typing3. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedV2: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+TypingInsertedV3: apply Find-type-user-defined-addition to Prem1 TypingInsertedV1 TypingInsertedV2.
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR Typing3 Tmp Prem2.
+witness EnvH.  
+witness EnvR'.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-weakening-H.  
+search.
+/* ################################### mult ############################################# */
+%% match
+Beginsmult: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedZs: apply Typing1. 
+TypingInsertedV1: apply Typing2. 
+TypingInsertedE: apply Typing3. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedV2: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+ 
+TypingInsertedV3: apply Find-type-user-defined-multiplication to Prem1 TypingInsertedV1 TypingInsertedV2.
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR Typing3 Tmp Prem2.
+witness EnvH.  
+witness EnvR'.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-weakening-H.  
+search.
+/* ################################### load ############################################# */
+Beginload: apply Step.
+Prem0: case Step(keep).
+apply Find-type-in-envR to Prem0 TypeOfR Typing1.
+case H1.
+case H2.
+apply Find-type-in-envH to Prem1 typeOfHNEW H3.
+case H4.
+case Prem2.
+case Typing2.
+assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply Irrelevance-Env-for-ValueTyping-R to H7 Prem4 with EnvR' = EnvR'.
+apply TypeOf-updateR to TypeOfR Typing3 H8 Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+case Typing2.
+assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply Irrelevance-Env-for-ValueTyping-R to H7 Prem4 with EnvR' = EnvR'.
+apply TypeOf-updateR to TypeOfR Typing3 H8 Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+/* ################################### malloc ############################################# */
+Beginmalloc: apply Step.
+Prem0: case Step(keep).
+witness (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH).
+witness EnvR'.
+split.
+search.
+SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH)}.
+apply Type-state-envs-weakening-H to Typing2 SubFact.
+search.
+HNEW_R': apply TypeOf-weakening-H to typeOfHNEW with EnvR' = EnvR'.
+ArrTyp: assert {typeOfH nilEnvT EnvH EnvR' (array (junk T1) (junk T2)) (arrayT T1 i0 T2 i0)}.
+HNEW_Ext: apply TypeOf-extend-prelim-H to HNEW_R' ArrTyp with l = LNewH.
+apply TypeOf-addH to Prem0 HNEW_Ext.
+search.
+case Prem0.
+Reg_Ext: apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0).
+PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0) EnvH) EnvR' (labelH (succLabelH L)) (refH (arrayT T1 
+i0 T2 i0))}.
+apply TypeOf-updateR to Reg_Ext Typing1 PtrTyp Prem1.
+search.
+/* ################################### move ############################################# */
+%% slight modificaiton
+Beginsmove: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZd: apply Typing0. 
+TypingInsertedV: apply Typing1. 
+TypingInsertedE: apply Typing2. 
+Tmp: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV _ with EnvR' = EnvR'.
+TypeOfR': apply TypeOf-updateR to TypeOfR TypingInsertedE Tmp Prem0.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+backchain Type-state-envs-weakening-H.
+backchain TypeOf-weakening-H.
+search.
+/* ################################### store ############################################# */
+Beginstore: apply Step.
+Prem0: case Step(keep).
+apply Find-type-in-envR to Prem0 TypeOfR Typing0.
+case H1.
+case H2.
+apply Find-type-in-envR to Prem1 TypeOfR Typing2.
+case Prem2.
+case Typing1.
+case Typing3.
+case H4.
+case H5.
+apply Find-type-in-envR to Prem1 TypeOfR Typing2.
+case H5.
+case H6.
+/* ################################### jmp ############################################# */
+% slight modification: added extra case on LookupInsertedL
+Beginsjmp: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedL: apply Typing0. 
+LookupInsertedL: case TypingInsertedL(keep).  
+LookupInsertedLCase: case LookupInsertedL.
+TypingInsertedcode: apply Find-type-in-envH to Prem0 typeOfHNEW LookupInsertedLCase with EnvR = EnvR.  
+case TypingInsertedcode(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-weakening-H.  
+search.
+/* ################################### bnz ############################################# */
+% slight modification: added extra case on LookupInsertedL
+Beginsbnz: apply Step. 
+Prem0: case Step(keep).  
+TypingInsertedZs: apply Typing0. 
+TypingInsertedL: apply Typing1. 
+TypingInsertedE2: apply Typing2. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedzero: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+case TypingInsertedzero(keep).  
+LookupInsertedL: case TypingInsertedL(keep).  
+LookupInsertedLCase: case LookupInsertedL.
+TypingInsertedcode: apply Find-type-in-envH to Prem1 typeOfHNEW LookupInsertedLCase with EnvR = EnvR.  
+case TypingInsertedcode(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-weakening-H.  
+search.  
+TypingInsertedZs: apply Typing0. 
+TypingInsertedL: apply Typing1. 
+TypingInsertedE: apply Typing2. 
+LookupInsertedZs: apply TypingInsertedZs. 
+TypingInsertedone: apply Find-type-in-envR to Prem0 TypeOfR LookupInsertedZs with EnvH = EnvH.  
+case TypingInsertedone(keep).  
+witness EnvH.  
+witness EnvR.  
+split.  
+search.  
+backchain Type-state-envs-weakening-H.  
+backchain TypeOf-weakening-H.  
+search.

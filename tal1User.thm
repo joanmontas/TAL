@@ -1,0 +1,120 @@
+Specification "tal1". 
+
+Theorem Find-type-user-defined-addition: 
+	%assert 
+	forall EnvH EnvR V1 V2 V3, 
+	{addition V1 V2 V3} -> 
+	{typeOfV nilEnvT EnvH EnvR V1 int} -> 
+	{typeOfV nilEnvT EnvH EnvR V2 int} -> 
+	{typeOfV nilEnvT EnvH EnvR V3 int}. 
+	intros.
+	case H1. 
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+
+
+Theorem Find-type-user-defined-multiplication: 
+	%assert 
+	forall EnvH EnvR V1 V2 V3, 
+	{multiplication V1 V2 V3} -> 
+	{typeOfV nilEnvT EnvH EnvR V1 int} -> 
+	{typeOfV nilEnvT EnvH EnvR V2 int} -> 
+	{typeOfV nilEnvT EnvH EnvR V3 int}. 
+	intros.
+	case H1. 
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
+	search.
