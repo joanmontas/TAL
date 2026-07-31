@@ -21,7 +21,9 @@ The <b>tal1.thm</b> proof contains comments were modifications/additions have be
 
 ## tal2
 
-A Typed Assembly Language: TAL of Morrisett et al. [1] without existential types. <b>tal2</b> implements the "Register File Subtyping" relation to allow conditional jumps <b>jmp</b> and unconditional jumps <b>bnz</b> to specify a subset of registers.  
+A Typed Assembly Language: TAL of Morrisett et al. [1] without existential types. 
+</br>
+<b>tal2</b> implements the "Register File Subtyping" relation to allow conditional jumps <b>jmp</b> and unconditional jumps <b>bnz</b> to specify a subset of registers.  
 </br>
 The mechanized proof of <b>tal2</b> has been obtained by editing the proof of <b>tal1</b>. 
 </br>
