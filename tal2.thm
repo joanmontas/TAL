@@ -357,6 +357,7 @@ Theorem Store-stores-values-R :
 skip.
 /* ------------------------------------------------------------------------------- */
 
+/* TAL2: moved lookup_when_inequal_labels-EnvR here because other lemmas need it earlier */ 
 Theorem lookup_when_inequal_labels-EnvR :
   forall l1 l2 map map' e1 e2,
     (l2 = l1 -> false) ->
@@ -373,6 +374,8 @@ STlookup : case STlookup.
           search.
           apply IH to Lanld STupdate STlookup. search.
 
+/* TAL2: The following three lemmas have been added: lookupEnvR-weakening-R, updateEnvR-weakening-R, transitivity-register_file_subtype. */ 
+/* TAL2: updateEnvR-weakening-R makes use lemma register_file_subtype-cons-weakening-R, also added. */ 
 
 Theorem lookupEnvR-weakening-R: forall EnvR Z T EnvR', 
 	{lookupEnvR EnvR Z T} -> 
@@ -466,6 +469,8 @@ apply Lemma to H2 H3.
 search. 
 
 
+/* TAL2: Type-state-envs-weakening-R must reason up-to the register_file_subtype relation over the lookup and update operation. */ 
+/* TAL2: jmp and bnz typing rules now use register_file_subtype and their proof case invokes transitivity */ 
 
 Theorem Type-state-envs-weakening-R:
   forall gamma, forall EnvH, forall EnvR, forall e, forall t, forall EnvR',
@@ -593,6 +598,7 @@ case H2(keep).
 % modification: removed necesary cases such as beginsone, beginzero
 
 
+/* TAL2:  */ 
 
 Theorem Type-preservation:
   forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R',
@@ -747,6 +753,7 @@ witness EnvH.
 witness EnvR.  
 split.  
 search.  
+/* TAL2: for jmp case, backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H */
 backchain Type-state-envs-weakening-R.  
 backchain TypeOf-irrelevanceOfEnv-H.  
 search.
@@ -768,6 +775,7 @@ witness EnvH.
 witness EnvR.  
 split.  
 search.  
+/* TAL2: for bnz case, backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H */
 backchain Type-state-envs-weakening-R.  
 backchain TypeOf-irrelevanceOfEnv-H.  
 search.  
@@ -781,6 +789,7 @@ witness EnvH.
 witness EnvR.  
 split.  
 search.  
+/* TAL2: for jmp case, backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H */
 backchain Type-state-envs-weakening-R.  
 backchain TypeOf-irrelevanceOfEnv-H.  
 search.
