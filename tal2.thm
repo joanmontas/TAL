@@ -598,8 +598,6 @@ case H2(keep).
 % modification: removed necesary cases such as beginsone, beginzero
 
 
-/* TAL2:  */ 
-
 Theorem Type-preservation:
   forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R',
   {typeOf (nilEnvT) EnvH EnvR e typ} ->
