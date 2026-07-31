@@ -25,7 +25,7 @@ A Typed Assembly Language: TAL of Morrisett et al. [1] without existential types
 </br>
 The mechanized proof of <b>tal2</b> has been obtained by editing the proof of <b>tal1</b>. 
 </br>
-The <b>tal2.thm</b> proof contains comments were modifications/additions have been needed: These comments can be distinguished from the comments that are already contained in <b>tal1.thm</b> in that they have the form <b>/* TAL2: ... */</b>.
+The <b>tal2.thm</b> proof contains comments were modifications/additions have been needed: These comments can be distinguished from those already contained in <b>tal1.thm</b> in that they have the form <b>/* TAL2: ... */</b>.
 </br>
 </br>
 <i><b>Time effort</b></i>: Around a work day (starting from <b>tal1</b>), that is, ~3 work days (starting from <b>asm_jmp_bnz</b>). 
