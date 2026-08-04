@@ -62,11 +62,11 @@ typeOfW Gamma EnvH EnvR (junk T) T (i0).
 typeOfW Gamma EnvH EnvR (labelH L) (refH T) (i1) :- lookupEnvH EnvH L T.
 
 
-typeOfH Gamma EnvH EnvR (array E1 E2) (arrayT T1 FL1 T2 FL2):-
+typeOfHvl Gamma EnvH EnvR (array E1 E2) (arrayT T1 FL1 T2 FL2):-
     typeOfW Gamma EnvH EnvR E1 T1 FL1,
     typeOfW Gamma EnvH EnvR E2 T2 FL2.
 
-typeOfH Gamma EnvH EnvR (code EnvR' E) (codeT EnvR') :-
+typeOfHvl Gamma EnvH EnvR (code EnvR' E) (codeT EnvR') :-
     typeOf Gamma EnvH EnvR' E (unitT). 
 
 
@@ -80,37 +80,37 @@ typeOf Gamma EnvH EnvR (add Zd Zs E1 E2) (unitT) :-
     lookupEnvR EnvR Zd SomeT, 
     lookupEnvR EnvR Zs (int), 
     typeOfV Gamma EnvH EnvR E1 (int), 
-    updateEnvR EnvR Zd (int) EnvR',
-    typeOf Gamma EnvH EnvR' E2 (unitT).
+    typeOf Gamma EnvH EnvR' E2 (unitT),
+    updateEnvR EnvR Zd (int) EnvR'.
 
 typeOf Gamma EnvH EnvR (mult Zd Zs E1 E2) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
     lookupEnvR EnvR Zs (int), 
     typeOfV Gamma EnvH EnvR E1 (int), 
-    updateEnvR EnvR Zd (int) EnvR',
-    typeOf Gamma EnvH EnvR' E2 (unitT).
+    typeOf Gamma EnvH EnvR' E2 (unitT),
+    updateEnvR EnvR Zd (int) EnvR'.
 
 typeOf Gamma EnvH EnvR (load Zd Zs I E) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
     %% lookupEnvR EnvR Zs (arrayT T1 FL1 T2 FL2),
     lookupEnvR EnvR Zs (refH (arrayT T1 FL1 T2 FL2)),
     arrayT_get (arrayT T1 FL1 T2 FL2) I T,
-    updateEnvR EnvR Zd T EnvR',
-    typeOf Gamma EnvH EnvR' E (unitT).
+    typeOf Gamma EnvH EnvR' E (unitT),
+    updateEnvR EnvR Zd T EnvR'.
 
 
 typeOf Gamma EnvH EnvR (malloc Zd T1 T2 E) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
     %% updateEnvR EnvR Zd (arrayT T1 (i0) T2 (i0)) EnvR',
-    updateEnvR EnvR Zd (refH (arrayT T1 (i0) T2 (i0))) EnvR',
-    typeOf Gamma EnvH EnvR' E (unitT).
+    typeOf Gamma EnvH EnvR' E (unitT),
+    updateEnvR EnvR Zd (refH (arrayT T1 (i0) T2 (i0))) EnvR'.
 
 
 typeOf Gamma EnvH EnvR (move Zd E1 E2) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
     typeOfV Gamma EnvH EnvR E1 T, 
-    updateEnvR EnvR Zd T EnvR',
-    typeOf Gamma EnvH EnvR' E2 (unitT).
+    typeOf Gamma EnvH EnvR' E2 (unitT),
+    updateEnvR EnvR Zd T EnvR'.
 
 
 typeOf Gamma EnvH EnvR (store Zd Zs I E) (unitT) :- 
@@ -120,8 +120,8 @@ typeOf Gamma EnvH EnvR (store Zd Zs I E) (unitT) :-
     lookupEnvR EnvR Zs T,
     set_flag (arrayT T1 FL1 T2 FL2) I AR,
     %% updateEnvR EnvR Zd AR EnvR',
-    updateEnvR EnvR Zd (refH AR) EnvR',
-    typeOf Gamma EnvH EnvR' E (unitT).
+    typeOf Gamma EnvH EnvR' E (unitT),
+    updateEnvR EnvR Zd (refH AR) EnvR'.
 
 
 typeOf Gamma EnvH EnvR (jmp E) (unitT) :- 

@@ -314,7 +314,8 @@ Theorem TypeOf-strong-updateR:
     intros TypeOfH LookupEnv TypeOfE Update.
 	TmpLookup : apply update_implies_lookup-R  to Update. 
 	TmpValue : apply Store-stores-values-R  to TmpLookup. 
-	TypeOfE : assert {typeOf nilEnvT envH envR' e T}. backchain Irrelevance-Env-for-ValueTyping-R. 
+	TypeOfE : assert {typeOf nilEnvT envH envR' e T}. 
+	backchain Irrelevance-Env-for-ValueTyping-R. 
     TypeOfHExpanded: case TypeOfH.
     unfold.
     intros LookupEnvHOfGoal.
@@ -380,7 +381,6 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarV1: apply Typing2. 
  TypeOfVarE: apply Typing3. 
  TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
-  
  TypeOfVarV3: apply Find-type-user-defined-addition to Prem1 TypeOfVarV1 TypeOfVarV2.  
  TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
  Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  

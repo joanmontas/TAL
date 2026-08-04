@@ -91,7 +91,7 @@ type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.
 type typeOf envT -> envH -> envR -> term -> typ -> o.
 type typeOfW envT -> envH -> envR -> term -> typ -> finiteInteger -> o.
-type typeOfH envT -> envH -> envR -> term -> typ -> o.
+type typeOfHvl envT -> envH -> envR -> term -> typ -> o.
 type typeOfV envT -> envH -> envR -> term -> typ -> o.
 
 type addition term -> term -> term -> o.
