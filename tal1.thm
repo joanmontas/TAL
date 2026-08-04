@@ -368,7 +368,6 @@ skip.
 /* TAL1: TypeOf-strong-updateR uses typeOfV rather than typeOf */
 
 Theorem TypeOf-strong-updateR: 
-    %assert 
 	forall envH mapR mapR' envR envR' e T L,
     typeOfR envH envR mapR ->
     {updateEnvR envR L T envR'} ->
