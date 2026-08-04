@@ -14,7 +14,7 @@ A Typed Assembly Language: TAL of Morrisett et al. [1] without existential types
 </br>
 The mechanized proof of <b>tal1</b> has been obtained by editing the proof of <b>asm_jmp_bnz</b>. 
 </br>
-The <b>tal1.thm</b> proof contains comments were modifications/additions have been needed. 
+The <b>tal1.thm</b> proof contains comments were modifications/additions have been needed. These comments have the form <b>/* TAL1: ... */</b>.
 </br>
 </br>
 <i><b>Time effort</b></i>: ~2 work days (starting from <b>asm_jmp_bnz</b>). 
