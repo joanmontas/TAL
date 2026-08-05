@@ -209,7 +209,11 @@ Theorem typeOf-weakening-H :
 intros Main Subset. case Main.
   apply TypeOfW-weakening-H to H1 Subset.
   apply TypeOfW-weakening-H to H2 Subset.
-  search.
+  apply TypeOfW-weakening-H to H3 Subset.
+  apply TypeOfW-weakening-H to H4 Subset.
+  apply TypeOfW-weakening-H to H5 Subset.
+  apply TypeOfW-weakening-H to H6 Subset.
+  search. 
 apply Type-state-envs-weakening-H to H1 Subset.
   search.
 
@@ -500,15 +504,17 @@ backchain TypeOf-weakening-R.
 
 Beginload: apply Step.
 Prem0: case Step(keep).
-apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing1.
-case H1.
-case H2.
-apply Find-type-in-env-byLookupH to Prem1 TypeOfH H3.
-case H4.
+TypeOfVarL : apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing1.
+TypeOfW-VarL : case TypeOfVarL. 
+LookupVarL : case TypeOfW-VarL.
+TypeOfVarV : apply Find-type-in-env-byLookupH to Prem1 TypeOfH LookupVarL.
+Array1 : case TypeOfVarV.
 case Prem2.
+%% case Prem2 splits into the 6 cases of array_get based on index. 
+%% array get with number i0
 case Typing2.
-assert {typeOfV nilEnvT EnvH EnvR V' T}.
-apply TypeOf-strong-updateR to TypeOfR Typing4 H7 Prem3.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
@@ -516,9 +522,54 @@ search.
 search.
 backchain TypeOf-weakening-H.
 search.
+%% array get with number i1
 case Typing2.
-assert {typeOfV nilEnvT EnvH EnvR V' T}.
-apply TypeOf-strong-updateR to TypeOfR Typing4 H7 Prem3.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+%% array get with number i2
+case Typing2.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+%% array get with number i3
+case Typing2.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+%% array get with number i4
+case Typing2.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
+witness EnvH.
+witness EnvR'.
+split.
+search.
+search.
+backchain TypeOf-weakening-H.
+search.
+%% array get with number i5
+case Typing2.
+TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
@@ -527,26 +578,26 @@ search.
 backchain TypeOf-weakening-H.
 search.
 
-/* TAL1: case of malloc, modification for handling array.  */
+
+/* TAL1: case of malloc, modifications for handling array.  */
 
 Beginmalloc: apply Step.
 Prem0: case Step(keep).
-witness (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH).
+witness (consEnvH LNewH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH).
 witness EnvR'.
 split.
 search.
-SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0) EnvH)}.
+SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH)}.
 apply Type-state-envs-weakening-H to Typing1 SubFact.
 search.
 HNEW_R': apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.
-ArrTyp: assert {typeOfHvl nilEnvT EnvH EnvR' (array (junk T1) (junk T2)) (arrayT T1 i0 T2 i0)}.
+ArrTyp: assert {typeOfHvl nilEnvT EnvH EnvR' (array (junk T1) (junk T2) (junk T3) (junk T4) (junk T5) (junk T6)) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0)}.
 HNEW_Ext: apply TypeOf-extend-prelim-H to HNEW_R' ArrTyp with l = LNewH.
 apply TypeOf-extendH to Prem0 HNEW_Ext.
 search.
 case Prem0.
-Reg_Ext: apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0).
-PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0) EnvH) EnvR (labelH (succLabelH L)) (refH (arrayT T1 
-i0 T2 i0))}.
+Reg_Ext: apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0).
+PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH) EnvR (labelH (succLabelH L)) (refH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0))}.
 apply TypeOf-strong-updateR to Reg_Ext Typing2 PtrTyp Prem1.
 search.
 
@@ -577,24 +628,29 @@ search.
 
 Beginstore: apply Step.
 Prem0: case Step(keep).
-apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing0.
-case H1.
-case H2.
-apply Find-type-in-env-byLookupR to Prem1 TypeOfR Typing2.
+TypeOfVarL : apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing0.
+TypeOfVarV : apply Find-type-in-env-byLookupR to Prem1 TypeOfR Typing2.
 case Prem2.
-case Typing1.
-case Typing3.
-case H4.
-case H5.
-apply Find-type-in-env-byLookupR to Prem1 TypeOfR Typing2.
-case H5.
-case H6.
+%% case Prem2 splits into the 6 cases of array_get based on index. 
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
+TypeOfW-VarV : case TypeOfVarV.
+case TypeOfW-VarV.
 
 
 /* TAL1: case of jmp, slight modification: 
    added the two extra cases 'TypeOfW-VarL : case TypeOfVarL' and 'LookupVarL : case TypeOfW-VarL'
    to derive a lookup formula from typing a label, which Find-type-in-env-byLookupH works with. 
-   two cases because typeOfV goes through typeOfW because releasing the lookup formula. */
+   two cases because typeOfV goes through typeOfW because releasing the lookup formula. 
+   */
 
 Beginsjmp: apply Step. 
 Prem0: case Step(keep).  

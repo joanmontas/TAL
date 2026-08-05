@@ -75,7 +75,7 @@ type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
 type mult register -> register -> term -> term -> term.
 type load register -> register -> term -> term -> term.
-type malloc register -> typ -> typ -> term -> term.
+type malloc register -> typ -> typ -> typ -> typ -> typ -> typ -> term -> term.
 type move register -> term -> term -> term.
 type store register -> register -> term -> term -> term.
 
@@ -102,12 +102,13 @@ type arrayT_get typ -> term -> typ -> o.
 
 type set_flag typ -> term -> typ -> o.
 
-type arrayT typ -> finiteInteger -> typ -> finiteInteger -> typ.
+type arrayT typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ.
 
 type wValue term -> o.
 type sValue term -> o.
 type hValue term -> o.
 
 
-type array term -> term -> term.
+type array term -> term -> term -> term -> term -> term -> term.
 type junk typ -> term.
+

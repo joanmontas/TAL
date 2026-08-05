@@ -23,17 +23,30 @@ updateMapH (consMapH L1 E1 MU) L E' (consMapH L1 E1 MU') :- updateMapH MU L E' M
 
 addMapH (consMapH L E1 MU) E2 (consMapH (succLabelH L) E2 (consMapH L E1 MU)) (succLabelH L). 
 
-array_get (array E1 E2) (num i0) E1.
 
-array_get (array E1 E2) (num i1) E2.
+array_get (array E1 E2 E3 E4 E5 E6) (num i0) E1.
+array_get (array E1 E2 E3 E4 E5 E6) (num i1) E2.
+array_get (array E1 E2 E3 E4 E5 E6) (num i2) E3.
+array_get (array E1 E2 E3 E4 E5 E6) (num i3) E4.
+array_get (array E1 E2 E3 E4 E5 E6) (num i4) E5.
+array_get (array E1 E2 E3 E4 E5 E6) (num i5) E6.
 
-arrayT_get (arrayT T1 FL1 T2 FL2) (num i0) T1.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i0) T1.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i1) T2.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i2) T3.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i3) T4.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i4) T5.
+arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i5) T6.
 
-arrayT_get (arrayT T1 FL1 T2 FL2) (num i1) T2.
 
-set_flag (arrayT T1 FL1 T2 FL2) (num i0) (arrayT T1 (i1) T2 FL2).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i0) (arrayT T1 i1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i1) (arrayT T1 FL1 T2 i1 T3 FL3 T4 FL4 T5 FL5 T6 FL6).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i2) (arrayT T1 FL1 T2 FL2 T3 i1 T4 FL4 T5 FL5 T6 FL6).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i3) (arrayT T1 FL1 T2 FL2 T3 FL3 T4 i1 T5 FL5 T6 FL6).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i4) (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 i1 T6 FL6).
+set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i5) (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 i1).
 
-set_flag (arrayT T1 FL1 T2 FL2) (num i1) (arrayT T1 FL1 T2 (i1)).
+
 
 lookupEnvR (consEnvR L T EnvR) L T.
 
@@ -62,9 +75,13 @@ typeOfW Gamma EnvH EnvR (junk T) T (i0).
 typeOfW Gamma EnvH EnvR (labelH L) (refH T) (i1) :- lookupEnvH EnvH L T.
 
 
-typeOfHvl Gamma EnvH EnvR (array E1 E2) (arrayT T1 FL1 T2 FL2):-
+typeOfHvl Gamma EnvH EnvR (array E1 E2 E3 E4 E5 E6) (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) :-
     typeOfW Gamma EnvH EnvR E1 T1 FL1,
-    typeOfW Gamma EnvH EnvR E2 T2 FL2.
+    typeOfW Gamma EnvH EnvR E2 T2 FL2, 
+    typeOfW Gamma EnvH EnvR E3 T3 FL3, 
+    typeOfW Gamma EnvH EnvR E4 T4 FL4, 
+    typeOfW Gamma EnvH EnvR E5 T5 FL5, 
+    typeOfW Gamma EnvH EnvR E6 T6 FL6.
 
 typeOfHvl Gamma EnvH EnvR (code EnvR' E) (codeT EnvR') :-
     typeOf Gamma EnvH EnvR' E (unitT). 
@@ -92,18 +109,17 @@ typeOf Gamma EnvH EnvR (mult Zd Zs E1 E2) (unitT) :-
 
 typeOf Gamma EnvH EnvR (load Zd Zs I E) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
-    %% lookupEnvR EnvR Zs (arrayT T1 FL1 T2 FL2),
-    lookupEnvR EnvR Zs (refH (arrayT T1 FL1 T2 FL2)),
-    arrayT_get (arrayT T1 FL1 T2 FL2) I T,
+    %% lookupEnvR EnvR Zs (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6),
+    lookupEnvR EnvR Zs (refH (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6)),
+    arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) I T,
     typeOf Gamma EnvH EnvR' E (unitT),
     updateEnvR EnvR Zd T EnvR'.
 
 
-typeOf Gamma EnvH EnvR (malloc Zd T1 T2 E) (unitT) :- 
+typeOf Gamma EnvH EnvR (malloc Zd T1 T2 T3 T4 T5 T6 E) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
-    %% updateEnvR EnvR Zd (arrayT T1 (i0) T2 (i0)) EnvR',
     typeOf Gamma EnvH EnvR' E (unitT),
-    updateEnvR EnvR Zd (refH (arrayT T1 (i0) T2 (i0))) EnvR'.
+    updateEnvR EnvR Zd (refH (arrayT T1 (i0) T2 (i0) T3 (i0) T4 (i0) T5 (i0) T6 (i0))) EnvR'.
 
 
 typeOf Gamma EnvH EnvR (move Zd E1 E2) (unitT) :- 
@@ -114,12 +130,10 @@ typeOf Gamma EnvH EnvR (move Zd E1 E2) (unitT) :-
 
 
 typeOf Gamma EnvH EnvR (store Zd Zs I E) (unitT) :- 
-    %% lookupEnvR EnvR Zd (arrayT T1 FL1 T2 FL2), 
-    lookupEnvR EnvR Zd (refH (arrayT T1 FL1 T2 FL2)),
-    arrayT_get (arrayT T1 FL1 T2 FL2) I T,
+    lookupEnvR EnvR Zd (refH (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6)),
+    arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) I T,
     lookupEnvR EnvR Zs T,
-    set_flag (arrayT T1 FL1 T2 FL2) I AR,
-    %% updateEnvR EnvR Zd AR EnvR',
+    set_flag (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) I AR,
     typeOf Gamma EnvH EnvR' E (unitT),
     updateEnvR EnvR Zd (refH AR) EnvR'.
 
@@ -158,8 +172,8 @@ step (load Zd Zs I E) H R E H R' :-
     value V'. 
 
 
-step (malloc Zd T1 T2 E) H R E H' R' :-
-    addMapH H (array (junk T1) (junk T2)) H' LNewH, 
+step (malloc Zd T1 T2 T3 T4 T5 T6 E) H R E H' R' :-
+    addMapH H (array (junk T1) (junk T2) (junk T3) (junk T4) (junk T5) (junk T6)) H' LNewH, 
     updateMapR R Zd (labelH LNewH) R', 
     value (labelH LNewH). 
 
