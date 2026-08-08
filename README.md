@@ -1,6 +1,8 @@
 # Mechanized Proof of a Typed Assembly Language
 
-<font color="red">red text</font>
+```diff
+- red text
+```
 
 ## asm_jmp_bnz
 
