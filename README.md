@@ -1,7 +1,8 @@
 # Mechanized Proof of a Typed Assembly Language
 
 ```diff
-- red text
+- We have found errors in tal1.thm and tal2.thm.
+- Until we post a new version of them, please consider them incorrect.
 ```
 
 ## asm_jmp_bnz
