@@ -56,10 +56,10 @@ Make sure you possess the Abella proof assistant tool in the version stated in t
 </li>
 <li> For <b>tal1</b>, run: 
 
-  `abella tal1User.thm -c tal1User.thc ; abella tal1.thm`
+  `abella ta1lUser.thm -c ta1lUser.thc ; abella tal1.thm`
 </li>
 <li> For <b>tal2</b>, run: 
 
-  `abella tal2User.thm -c tal2User.thc ; abella tal2.thm`
+  `abella ta2lUser.thm -c ta2lUser.thc ; abella tal2.thm`
 </li>
 </ul>

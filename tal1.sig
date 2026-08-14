@@ -3,12 +3,6 @@ sig tal1.
 kind term type.
 kind typ type.
 
-%% map Gamma
-
-kind envT type.
-type nilEnvT envT.
-type consEnvT term -> typ -> envT -> envT.
-
 
 %% map H
 kind labelH type.
@@ -75,7 +69,7 @@ type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
 type mult register -> register -> term -> term -> term.
 type load register -> register -> term -> term -> term.
-type malloc register -> typ -> typ -> typ -> typ -> typ -> typ -> term -> term.
+type malloc register -> term -> term -> term -> term -> term -> term -> term -> term.
 type move register -> term -> term -> term.
 type store register -> register -> term -> term -> term.
 
@@ -89,26 +83,23 @@ type bnz register -> term -> term -> term.
 
 type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.
-type typeOf envT -> envH -> envR -> term -> typ -> o.
-type typeOfW envT -> envH -> envR -> term -> typ -> finiteInteger -> o.
-type typeOfHvl envT -> envH -> envR -> term -> typ -> o.
-type typeOfV envT -> envH -> envR -> term -> typ -> o.
+type typeOf envH -> envR -> term -> typ -> o.
+type typeOfWval envH -> term -> typ -> o.
+type typeOfHvl envH -> term -> typ -> o.
+type typeOfV envH -> envR -> term -> typ -> o.
 
 type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
 
 type array_get term -> term -> term -> o.
 type arrayT_get typ -> term -> typ -> o.
-
-type set_flag typ -> term -> typ -> o.
-
-type arrayT typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ -> finiteInteger -> typ.
-
-type wValue term -> o.
-type sValue term -> o.
-type hValue term -> o.
+type array_set term -> term -> term -> term -> o.
 
 
+
+type arrayT typ -> typ -> typ -> typ -> typ -> typ -> typ.
 type array term -> term -> term -> term -> term -> term -> term.
-type junk typ -> term.
+
+
+type register_file_subtype envR -> envR -> o. 
 

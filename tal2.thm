@@ -4,7 +4,9 @@ Import "tal2User".
 /* Obtained by editing tal1.thm. 
    Comments are inserted only where modifications/additions from tal1 were needed, and are tagged TAL2 
    Below, we refer to asm_jmp_bnz simply as 'asm' for the sake of simplicity */
-   
+
+Theorem existence_of_update : forall EnvR Zd E, exists EnvR', {updateEnvR EnvR Zd E EnvR'}. skip. 
+Theorem update_of_register_subtype : forall EnvR1 EnvR2 Zd T EnvR1' EnvR2', {register_file_subtype EnvR1 EnvR2} -> {updateEnvR EnvR1 Zd T EnvR1'} -> {updateEnvR EnvR2 Zd T EnvR2'} -> {register_file_subtype EnvR1' EnvR2'}. skip. 
 
 Theorem Lookup-store-weakening-H:
   forall env, forall env', forall l, forall t,
@@ -18,39 +20,47 @@ IH0 : induction on 1. intros Main Lookup. Subset: case Main.
 
  
 /* TAL1: tal has multiple typeOf relations rather than just one typeOf. 
-   TypeOfW-weakening-H and typeOfV-weakening-H are asm's TypeOf-weakening-H but for typeOfW and typeOfV, respectively. 
-   Differently from asm, Type-state-envs-weakening-H uses typeOfV-weakening-H, which uses typeOfW-weakening-H */
+   TypeOfWval-weakening-H and typeOfV-weakening-H are asm's TypeOf-weakening-H but for typeOfWval and typeOfV, respectively. 
+   Differently from asm, Type-state-envs-weakening-H uses typeOfV-weakening-H, which uses TypeOfWval-weakening-H */
+
+Theorem TypeOfWval-weakening-H :
+  forall EnvH e t EnvH',
+    {typeOfWval EnvH e t} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOfWval EnvH' e t}.
+intros Main Subset.
+case Main. 
+search.
+apply Lookup-store-weakening-H to Subset H1. search.
 
 Theorem TypeOfW-weakening-H :
-  forall gamma EnvH EnvR e t fl EnvH',
-    {typeOfW gamma EnvH EnvR e t fl} ->
+  forall EnvH e t EnvH' FL,
+    {typeOfW EnvH e t FL} ->
     {subsetEnvH EnvH EnvH'} ->
-    {typeOfW gamma EnvH' EnvR e t fl}.
+    {typeOfW EnvH' e t FL}.
 intros Main Subset.
-  case Main. 
-search.
-  search.
-  apply Lookup-store-weakening-H to Subset H1.
-  search.
+case Main. 
+apply TypeOfWval-weakening-H to H1 Subset. search. 
+search. 
 
 Theorem TypeOfV-weakening-H :
-  forall gamma EnvH EnvR e t EnvH',
-    {typeOfV gamma EnvH EnvR e t} ->
+  forall EnvH EnvR e t EnvH',
+    {typeOfV EnvH EnvR e t} ->
     {subsetEnvH EnvH EnvH'} ->
-    {typeOfV gamma EnvH' EnvR e t}.
+    {typeOfV EnvH' EnvR e t}.
 intros Main Subset.
   case Main.
-  apply TypeOfW-weakening-H to H1 Subset.
+  apply TypeOfWval-weakening-H to H1 Subset.
   search.
   
 
 /* TAL1: slight modification to derive typeOfV formulae to satisfy the typeOfV premises of typeOf, these are MaddV, MmultV, etc. below. */
 
 Theorem Type-state-envs-weakening-H:
-  forall gamma, forall EnvH, forall EnvR, forall e, forall t, forall EnvH',
-    {typeOf gamma EnvH EnvR e t} ->
+  forall EnvH, forall EnvR, forall e, forall t, forall EnvH',
+    {typeOf EnvH EnvR e t} ->
     {subsetEnvH EnvH EnvH'} ->
-    {typeOf gamma EnvH' EnvR e t}.
+    {typeOf EnvH' EnvR e t}.
 IH0 : induction on 1. intros Main Subset.
 Typing0: case Main(keep). 
 search.
@@ -62,12 +72,13 @@ Mmult: apply IH0 to Typing3 Subset.
 search.
 Mload: apply IH0 to Typing3 Subset.  
 search.  
-Mmalloc: apply IH0 to Typing1 Subset.  
+Mmalloc: 
+apply IH0 to Typing1 Subset.  
 search.  
 MmoveV: apply TypeOfV-weakening-H to Typing1 Subset.
 Mmove: apply IH0 to Typing2 Subset.  
-search.  
-Mstore: apply IH0 to Typing4 Subset.  
+search. 
+Mstore: apply IH0 to Typing5 Subset.  
 search.  
 MjmpV: apply TypeOfV-weakening-H to Typing0 Subset.
 search.  
@@ -82,28 +93,27 @@ search.
 /* TAL2: slight modification, theorem works for Gamma rather than nilEnvH, same proof works. Type-state-envs-weakening-R needs Gamma. For asm_bnz_jmp and tal1, nilEnvH was fine. */
 
 Theorem Irrelevance-Env-for-ValueTyping-R: 
-  forall EnvH, forall Gamma EnvR, forall v, forall t, forall EnvR',
-  {typeOfV Gamma EnvH EnvR v t} -> 
-  {typeOfV Gamma EnvH EnvR' v t}.
+  forall EnvH, forall EnvR, forall v, forall t, forall EnvR',
+  {typeOfV EnvH EnvR v t} -> 
+  {typeOfV EnvH EnvR' v t}.
 intros TypeOf ValueHyp.  
  case TypeOf(keep).
 case H1.
-search.
 search.
 search.
 
 
 /* TAL1: typeOfH types with typeOfHvl, and typeOfR types with typeOfV */
 
-Define typeOfH: envH -> envR -> mapH -> prop by
-typeOfH EnvH EnvR MapH := forall l, forall t, 
+Define typeOfH: envH -> mapH -> prop by
+typeOfH EnvH MapH := forall l, forall t, 
 {lookupEnvH EnvH l t} -> 
-exists e, {lookupMapH MapH l e} /\ {typeOfHvl (nilEnvT) EnvH EnvR e t}.
+exists e, {lookupMapH MapH l e} /\ {typeOfHvl EnvH e t}.
 
 Define typeOfR: envH -> envR -> mapR -> prop by
 typeOfR EnvH EnvR MapR := forall l, forall t, 
 {lookupEnvR EnvR l t} -> 
-exists e, {lookupMapR MapR l e} /\ {typeOfV (nilEnvT) EnvH EnvR e t}.
+exists e, {lookupMapR MapR l e} /\ {typeOfWval EnvH e t}.
 
 Theorem Uniqueness-of-lookupMap-H : 
   forall map L e1 e2, 
@@ -125,7 +135,7 @@ Theorem  Find-type-in-env-byLookupR  :
     {lookupMapR map L e} ->
     typeOfR EnvH EnvR map ->
 	{lookupEnvR EnvR L T} ->
-    {typeOfV (nilEnvT) EnvH EnvR e T}. 
+    {typeOfV EnvH EnvR e T}. 
 intros Lookup typeOfH LookupEnv.
 	case typeOfH(keep).
 	apply H1 to LookupEnv.
@@ -180,12 +190,12 @@ STlookup : case STlookup.
    proof is the same */
 
 Theorem typeOfHvl-updateH: 
-    forall envH envR map map' e T L,
-      typeOfH envH envR map ->
+    forall envH map map' e T L,
+      typeOfH envH map ->
 	  	{lookupEnvH envH L T} ->
-    {typeOfHvl nilEnvT envH envR e T} ->
+    {typeOfHvl envH e T} ->
       {updateMapH map L e map'} ->
-      typeOfH envH envR map'.
+      typeOfH envH map'.
 intros typeOfH LookupEnv TypeOfE Update. 
 	  typeOfHExpanded: case typeOfH.
 	  unfold.
@@ -203,13 +213,13 @@ Landl : apply excluded_middle_labels-H with l1 = L, l2 = l.
 
 
 /* TAL1: typeOf-weakening-H uses TypeOfHvl rather than typeOf
-   slight modification in proof, it uses typeOfW-weakening-H */
+   slight modification in proof, it uses TypeOfWval-weakening-H */
 
 Theorem typeOf-weakening-H :
-  forall gamma EnvH EnvR e t EnvH',
-    {typeOfHvl gamma EnvH EnvR e t} ->
+  forall EnvH e t EnvH',
+    {typeOfHvl EnvH e t} ->
     {subsetEnvH EnvH EnvH'} ->
-    {typeOfHvl gamma EnvH' EnvR e t}.
+    {typeOfHvl EnvH' e t}.
 intros Main Subset. case Main.
   apply TypeOfW-weakening-H to H1 Subset.
   apply TypeOfW-weakening-H to H2 Subset.
@@ -226,10 +236,10 @@ apply Type-state-envs-weakening-H to H1 Subset.
    proof is the same */
 
 Theorem TypeOf-extend-prelim-H:  
-    forall envH envR map E T l,  
-      typeOfH envH envR map ->  
-      {typeOfHvl nilEnvT envH envR E T} ->  
-      typeOfH (consEnvH l T envH)  envR (consMapH l E map).
+    forall envH map E T l,  
+      typeOfH envH map ->  
+      {typeOfHvl envH E T} ->  
+      typeOfH (consEnvH l T envH)  (consMapH l E map).
 intros typeOfHvl TypeOfE.
 typeOfHvlExpanded: case typeOfHvl.
 unfold.
@@ -249,19 +259,13 @@ LookupEnv: case LookupEnv.
   search.
 
 Theorem TypeOf-extendH : 
-  forall map E map' L T env envR,  
+  forall map E map' L T env,  
   {addMapH map E map' L} -> 
-  typeOfH (consEnvH L T env) envR (consMapH L E map) ->
-  typeOfH (consEnvH L T env) envR map'.
+  typeOfH (consEnvH L T env) (consMapH L E map) ->
+  typeOfH (consEnvH L T env) map'.
 induction on 1. intros Main Lookup.
   Subset: case Main.
   search.
-
-Theorem Store-stores-values-H : 
-	  	forall map l e,
-	  	{lookupMapH map l e} -> 
-	  	{value e}.
-skip.
 
 
 /* TAL1: TypeOf-weakening-for-extns-H, slight modification, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
@@ -275,17 +279,16 @@ TypeOfRExpanded: case TypeOfR.
 unfold. intros LookupFromGoal.
 FromTypeOfR : apply TypeOfRExpanded to LookupFromGoal. 
 exists e. split. search. 
-backchain TypeOfV-weakening-H.
-
+backchain TypeOfWval-weakening-H.
 
 /* TAL1: We use only Find-type-in-env-byLookupH and not Find-type-in-envH. This lemma uses typeOfHvl rather than typeOf */
 
 Theorem Find-type-in-env-byLookupH :
-    forall EnvH EnvR map L e T,
+    forall EnvH map L e T,
     {lookupMapH map L e} ->
-    typeOfH EnvH EnvR map ->
+    typeOfH EnvH map ->
     {lookupEnvH EnvH L T} ->
-    {typeOfHvl (nilEnvT) EnvH EnvR e T}.
+    {typeOfHvl EnvH e T}.
 intros Lookup TypeH LookupEnv.
   case TypeH(keep).
   apply H1 to LookupEnv.
@@ -364,11 +367,6 @@ Theorem lookup_when_inequal_labels-pre-EnvR:
               search.
               apply IH to Lanld STupdate STlookup. search.
 
-Theorem Store-stores-values-R : 
-	  	forall map l e,
-	  	{lookupMapR map l e} -> 
-	  	{value e}.
-skip.
 
 
 /* TAL2: moved lookup_when_inequal_labels-EnvR here because other lemmas need it earlier */ 
@@ -486,10 +484,10 @@ search.
    Type-state-envs-weakening-R works with typeOf */
 
 Theorem Type-state-envs-weakening-R:
-  forall gamma, forall EnvH, forall EnvR, forall e, forall t, forall EnvR',
-    {typeOf gamma EnvH EnvR e t} ->
+  forall EnvH, forall EnvR, forall e, forall t, forall EnvR',
+    {typeOf EnvH EnvR e t} ->
     {register_file_subtype EnvR EnvR'} ->
-    {typeOf gamma EnvH EnvR' e t}.
+    {typeOf EnvH EnvR' e t}.
 IH0 : induction on 1. intros Main Subset.
 Typing0: case Main(keep). 
 % halt
@@ -533,8 +531,9 @@ search.
 % store 
 apply lookupEnvR-weakening-R to Typing0 _. 
 apply lookupEnvR-weakening-R to Typing2 _. 
-apply updateEnvR-weakening-R to Typing5 _.
-apply IH0 to Typing4 _. 
+UpdateEnvR' : apply existence_of_update with EnvR = EnvR', Zd = Zd, E = Arr. 
+SubEnvR'' : apply update_of_register_subtype to Subset Typing4 UpdateEnvR'.
+apply IH0 to Typing5 SubEnvR''. 
 search. 
 % end store
 % jmp 
@@ -556,13 +555,12 @@ Theorem TypeOf-strong-updateR:
 	forall envH mapR mapR' envR envR' e T L,
     typeOfR envH envR mapR ->
     {updateEnvR envR L T envR'} ->
-	{typeOfV nilEnvT envH envR e T} ->
+	{typeOfV envH envR e T} ->
     {updateMapR mapR L e mapR'} ->
     typeOfR envH envR' mapR'. 
     intros TypeOfH LookupEnv TypeOfE Update.
 	TmpLookup : apply update_implies_lookup-R  to Update. 
-	TmpValue : apply Store-stores-values-R  to TmpLookup. 
-	TypeOfE : assert {typeOfV nilEnvT envH envR' e T}. 
+	TypeOfE : assert {typeOfV envH envR' e T}. 
 	backchain Irrelevance-Env-for-ValueTyping-R. 
     TypeOfHExpanded: case TypeOfH.
     unfold.
@@ -573,14 +571,13 @@ Theorem TypeOf-strong-updateR:
     apply update_implies_lookup-R to Update.
     apply update_implies_lookupEnv-R to LookupEnv. 
     apply Uniqueness-of-lookupEnv-R to LookupEnvHOfGoal H2.
+	case TypeOfE1. 
     search.
     % l != L
     LookkupForTypeOfH : apply lookup_when_inequal_labels-pre-EnvR to Landl LookupEnv LookupEnvHOfGoal. 
     LookupMap : apply TypeOfHExpanded to LookkupForTypeOfH.
     apply lookup_when_inequal_labels-R to Landl Update LookupMap.
-    Value: apply Store-stores-values-R to LookupMap. 
-    exists e1. split. search. 
-    backchain Irrelevance-Env-for-ValueTyping-R.
+    exists e1. split. search. search. 
 		
 	
 /* TAL 1: TypeOf-weakening-for-extns-R, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
@@ -594,30 +591,21 @@ Theorem TypeOf-strong-updateR:
   unfold. intros LookupFromGoal.
   FromTypeOfR : apply TypeOfRExpanded to LookupFromGoal. 
   exists e. split. search. 
-  backchain TypeOfV-weakening-H.
+  backchain TypeOfWval-weakening-H.
   
-  
+/* PROVE THIS AFTER STORE CASE IN PRESERVATION */
+Theorem flag_subtyping_does_not_change_types : forall T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6 T1' FL1' T2' FL2' T3' FL3' T4' FL4' T5' FL5' T6' FL6', 
+{flag_subtyping (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (arrayT T1' FL1' T2' FL2' T3' FL3' T4' FL4' T5' FL5' T6' FL6')} -> 
+T1 = T1' /\ T2 = T2' /\ T3 = T3' /\ T4 = T4' /\ T5 = T5' /\ T6 = T6'.
+skip. 
 
-Theorem TypeOf-weakening-H: 
-  forall EnvH, forall EnvR, forall map, forall EnvR',
-  typeOfH EnvH EnvR map ->
-  typeOfH EnvH EnvR' map.
-intros Main.  
-TypeOfExpanded: case Main(keep).  
-unfold.  
-intros Main1.  
-apply TypeOfExpanded to Main1.  
-apply Store-stores-values-H to H1.  
-witness e.  
-case H3(keep).
-case H2(keep).
-case H2(keep).
-case H2(keep).
+/* PROVE THIS AFTER STORE CASE IN PRESERVATION */
+Theorem flag_subtyping_does_not_turn_one_to_zero : forall T1 T1' T2 T2' I, 
+{arrayT_get T1 I T1' i1} -> {arrayT_get T2 I T2' i0} -> false.
+skip. 
 
-Theorem TypeOf-weakening-R: forall EnvH, forall EnvR, forall map, typeOfR EnvH EnvR map -> typeOfR EnvH EnvR map. 
-intros Main.  
-search. 
-
+/* PROVE THIS AFTER STORE CASE IN PRESERVATION */
+Theorem flag_subtyping_is_equality_on_codeT : forall EnvR1 EnvR2, {flag_subtyping (codeT EnvR1) (codeT EnvR2)} -> EnvR1 = EnvR2. skip. 
 
 /* TAL 1: Type-preservation, modifications are marked within the proof. */
 /* TAL 2: General modification: Irrelevance-Env-for-ValueTyping-R does not take any longer the premise {value v}, 
@@ -625,13 +613,12 @@ search.
 
 Theorem Type-preservation:
   forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R',
-  {typeOf (nilEnvT) EnvH EnvR e typ} ->
-  typeOfH EnvH EnvR H -> 
+  {typeOf EnvH EnvR e typ} ->
+  typeOfH EnvH H -> 
   typeOfR EnvH EnvR R ->
   {step e H R e' H' R'} -> 
   exists EnvH', exists EnvR', 
-  {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' EnvR' e' typ} /\ 
-  typeOfH EnvH' EnvR' H' /\ typeOfR EnvH' EnvR' R'.
+  {typeOf  EnvH' EnvR' e' typ}  /\  typeOfH EnvH' H'  /\  typeOfR EnvH' EnvR' R'.
 IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.  
 
 /* TAL1: Here, some cases of 'case Main' have been removed: Example, num is a case in asm_jmp_bnz but not in TAL because here it is typed with typeOfV and not typeOf, therefore not here. */ 
@@ -648,18 +635,12 @@ TypeOfVarE: apply Typing3.
 TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
 TypeOfVarV3: apply Find-type-user-defined-addition to Prem1 TypeOfVarV1 TypeOfVarV2.  
 TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
-Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
-clear TypeOfH.  
-TypeOfH: apply Temporary. 
-clear Temporary.  
 witness EnvH.  
 witness EnvR'.  
 split.  
 search.  
-backchain Type-state-envs-weakening-H.  
-backchain TypeOf-weakening-H.  
-backchain TypeOf-weakening-R.  
-
+search. 
+search. 
 
 Beginsmult: apply Step. 
 Prem0: case Step(keep).  
@@ -670,17 +651,12 @@ TypeOfVarE: apply Typing3.
 TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
 TypeOfVarV3: apply Find-type-user-defined-multiplication to Prem1 TypeOfVarV1 TypeOfVarV2.  
 TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
-Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
-clear TypeOfH.  
-TypeOfH: apply Temporary. 
-clear Temporary.  
 witness EnvH.  
 witness EnvR'.  
 split.  
 search.  
-backchain Type-state-envs-weakening-H.  
-backchain TypeOf-weakening-H.  
-backchain TypeOf-weakening-R.  
+search. 
+search. 
 
 
 /* TAL1: case of load, modification for handling array. Handling arrays splits this one case into two cases. */
@@ -688,101 +664,144 @@ backchain TypeOf-weakening-R.
 Beginload: apply Step.
 Prem0: case Step(keep).
 TypeOfVarL : apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing1.
-TypeOfW-VarL : case TypeOfVarL. 
-LookupVarL : case TypeOfW-VarL.
+typeOfWval-VarL : case TypeOfVarL. 
+LookupVarL : case typeOfWval-VarL.
 TypeOfVarV : apply Find-type-in-env-byLookupH to Prem1 TypeOfH LookupVarL.
-Array1 : case TypeOfVarV.
 case Prem2.
 %% case Prem2 splits into the 6 cases of array_get based on index. 
 %% array get with number i0
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array1(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T i1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i0) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T i0 T2 FL11 T3 FL10 T4 FL9 T5 FL8 T6 FL7) (num i0) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 %% array get with number i1
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array2(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T1 FL1 T i1 T3 FL3 T4 FL4 T5 FL5 T6 FL6) (num i1) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T1 FL12 T i0 T3 FL10 T4 FL9 T5 FL8 T6 FL7) (num i1) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 %% array get with number i2
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array3(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T1 FL1 T2 FL2 T i1 T4 FL4 T5 FL5 T6 FL6) (num i2) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T1 FL12 T2 FL11 T i0 T4 FL9 T5 FL8 T6 FL7) (num i2) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 %% array get with number i3
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array4(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T i1 T5 FL5 T6 FL6) (num i3) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T1 FL12 T2 FL11 T3 FL10 T i0 T5 FL8 T6 FL7) (num i3) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 %% array get with number i4
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array5(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T i1 T5 FL5 T6 FL6) (num i4) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T1 FL12 T2 FL11 T3 FL10 T i0 T5 FL8 T6 FL7) (num i4) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 %% array get with number i5
 case Typing2.
-TypeOfVarV' : assert {typeOfV nilEnvT EnvH EnvR V' T}.
+Array1 : case TypeOfVarV.
+apply flag_subtyping_does_not_change_types to LookupVarL1. 
+typeOfWvalV' : case Array6(keep).
+% two cases of typeOfW. first: typeOfWval
+TypeOfVarV' : assert {typeOfV EnvH EnvR V' T}.
 apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV' Prem3.
 witness EnvH.
 witness EnvR'.
 split.
 search.
 search.
-backchain TypeOf-weakening-H.
 search.
-
+% two cases of typeOfW. second: typeOfW junk
+FlagLookup1 : assert {arrayT_get (arrayT T1 FL1 T2 FL2 T3 FL3 T4 FL4 T5 FL5 T i1) (num i5) T i1}. 
+FlagLookup2 : assert {arrayT_get (arrayT T1 FL12 T2 FL11 T3 FL10 T4 FL9 T5 FL8 T i0) (num i5) T i0}. 
+apply flag_subtyping_does_not_turn_one_to_zero to FlagLookup1 FlagLookup2. 
 
 /* TAL1: case of malloc, modifications for handling array.  */
 
 Beginmalloc: apply Step.
 Prem0: case Step(keep).
+
+TypeOfW-E1 : assert {typeOfW EnvH (junk T1) T1 i0}. 
+TypeOfW-E2 : assert {typeOfW EnvH (junk T2) T2 i0}. 
+TypeOfW-E3 : assert {typeOfW EnvH (junk T3) T3 i0}. 
+TypeOfW-E4 : assert {typeOfW EnvH (junk T4) T4 i0}. 
+TypeOfW-E5 : assert {typeOfW EnvH (junk T5) T5 i0}. 
+TypeOfW-E6 : assert {typeOfW EnvH (junk T6) T6 i0}. 
+ArrTyp : assert {typeOfHvl EnvH (array (junk T1) (junk T2) (junk T3) (junk T4) (junk T5) (junk T6)) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0)}.  
+apply TypeOf-extend-prelim-H to TypeOfH ArrTyp with l = LNewH.
+case Prem0.
+TypeOfRnew : apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0).
+PtrTyp: assert {typeOfV (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH) EnvR (labelH (succLabelH L)) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0)}.
+apply TypeOf-strong-updateR to TypeOfRnew Typing2 PtrTyp Prem1.
 witness (consEnvH LNewH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH).
 witness EnvR'.
 split.
-search.
-SubFact: assert {subsetEnvH EnvH (consEnvH LNewH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH)}.
-apply Type-state-envs-weakening-H to Typing1 SubFact.
-search.
-HNEW_R': apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.
-ArrTyp: assert {typeOfHvl nilEnvT EnvH EnvR' (array (junk T1) (junk T2) (junk T3) (junk T4) (junk T5) (junk T6)) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0)}.
-HNEW_Ext: apply TypeOf-extend-prelim-H to HNEW_R' ArrTyp with l = LNewH.
-apply TypeOf-extendH to Prem0 HNEW_Ext.
-search.
-case Prem0.
-Reg_Ext: apply TypeOf-weakening-for-extns-R to TypeOfR with L = L, T = (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0).
-PtrTyp: assert {typeOfV nilEnvT (consEnvH (succLabelH L) (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0) EnvH) EnvR (labelH (succLabelH L)) (refH (arrayT T1 i0 T2 i0 T3 i0 T4 i0 T5 i0 T6 i0))}.
-apply TypeOf-strong-updateR to Reg_Ext Typing2 PtrTyp Prem1.
-search.
+backchain Type-state-envs-weakening-H.  
+search. 
+search. 
+
 
 /* TAL1: end case of malloc */
 
@@ -793,66 +812,47 @@ TypeOfVarZd: apply Typing0.
 TypeOfVarV: apply Typing1. 
 TypeOfVarE: apply Typing2. 
 TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing3 TypeOfVarV Prem0.  
-Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
-clear TypeOfH.  
-TypeOfH: apply Temporary. 
-clear Temporary.  
 witness EnvH.  
 witness EnvR'.  
 split.  
 search.  
-backchain Type-state-envs-weakening-H.  
-backchain TypeOf-weakening-H.  
-/* TAL1: backchain TypeOf-weakening-R does not seem to catch the correct premises here to conclude, we replaced it with a simple 'search', which suffices.   */
-search.
+search. 
+search. 
+
 
 
 /* TAL1: case of store, modification for handling array. */
+/* PROVE THIS. THIS IS THE STORE CASE IN PRESERVATION 
+   REMOVE skip. 
+*/
 
-Beginstore: apply Step.
-Prem0: case Step(keep).
-TypeOfVarL : apply Find-type-in-env-byLookupR to Prem0 TypeOfR Typing0.
-TypeOfVarV : apply Find-type-in-env-byLookupR to Prem1 TypeOfR Typing2.
-case Prem2.
-%% case Prem2 splits into the 6 cases of array_get based on index. 
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
-TypeOfW-VarV : case TypeOfVarV.
-case TypeOfW-VarV.
+skip. 
 
 
 /* TAL1: case of jmp, slight modification: 
-   added the two extra cases 'TypeOfW-VarL : case TypeOfVarL' and 'LookupVarL : case TypeOfW-VarL'
+   added the two extra cases 'typeOfWval-VarL : case TypeOfVarL' and 'LookupVarL : case typeOfWval-VarL'
    to derive a lookup formula from typing a label, which Find-type-in-env-byLookupH works with. 
-   two cases because typeOfV goes through typeOfW because releasing the lookup formula. */
+   two cases because typeOfV goes through typeOfWval because releasing the lookup formula. */
+
 
 Beginsjmp: apply Step. 
 Prem0: case Step(keep).  
 TypeOfVarL: apply Typing0. 
-TypeOfW-VarL : case TypeOfVarL. 
-LookupVarL : case TypeOfW-VarL.
-TypeOfVarcode: apply Find-type-in-env-byLookupH to Prem0 TypeOfH LookupVarL with EnvR = EnvR.  
+TypeOfWval-VarL : case TypeOfVarL. 
+LookupVarL : case TypeOfWval-VarL.
+TypeOfVarcode: apply Find-type-in-env-byLookupH to Prem0 TypeOfH LookupVarL.  
 case TypeOfVarcode(keep).  
+apply flag_subtyping_is_equality_on_codeT to LookupVarL1. 
 witness EnvH.  
 witness EnvR.  
 split.  
-search.  
 /* TAL2: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
 backchain Type-state-envs-weakening-R.  
-backchain TypeOf-weakening-H.  
-backchain TypeOf-weakening-R.  
-
+search.
+search.
 
 /* TAL1: case of bnz, slight modification: 
-   added the two extra cases 'TypeOfW-VarL : case TypeOfVarL' and 'LookupVarL : case TypeOfW-VarL'
+   added the two extra cases 'TypeOfWval-VarL : case TypeOfVarL' and 'LookupVarL : case TypeOfWval-VarL'
    as above for jmp. */
 
  Beginsbnz: apply Step. 
@@ -862,18 +862,18 @@ backchain TypeOf-weakening-R.
  TypeOfVarE2: apply Typing2. 
  TypeOfVarnum: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
  case TypeOfVarnum(keep).  
-TypeOfW-VarL : case TypeOfVarL. 
-LookupVarL : case TypeOfW-VarL.
- TypeOfVarcode: apply Find-type-in-env-byLookupH to Prem1 TypeOfH LookupVarL with EnvR = EnvR.  
+typeOfWval-VarL : case TypeOfVarL. 
+LookupVarL : case typeOfWval-VarL.
+ TypeOfVarcode: apply Find-type-in-env-byLookupH to Prem1 TypeOfH LookupVarL.  
  case TypeOfVarcode(keep).  
+ apply flag_subtyping_is_equality_on_codeT to LookupVarL1. 
  witness EnvH.  
  witness EnvR.  
  split.  
- search.  
-/* TAL2: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
  backchain Type-state-envs-weakening-R.  
- backchain TypeOf-weakening-H.  
- backchain TypeOf-weakening-R.  
+ search.  
+ search.  
+
  TypeOfVarZs: apply Typing0. 
  TypeOfVarL: apply Typing1. 
  TypeOfVarE: apply Typing2. 
@@ -882,10 +882,12 @@ LookupVarL : case TypeOfW-VarL.
  witness EnvH.  
  witness EnvR.  
  split.  
- search.  
 /* TAL2: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
  backchain Type-state-envs-weakening-R.  
- backchain TypeOf-weakening-H.  
- backchain TypeOf-weakening-R.  
+ search.  
+ search.  
+
+
+
 
 
