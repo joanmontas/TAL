@@ -52,6 +52,12 @@ typeOf Gamma EnvH EnvR (mult Zd Zs E1 E2) (unitT) :-
 	typeOf Gamma EnvH EnvR' E2 (unitT),  
 	updateEnvR EnvR Zd (int) EnvR'. 
 
+typeOf Gamma EnvH EnvR (sub Zd Zs E1 E2) (unitT) :- 
+	lookupEnvR EnvR Zd SomeT, 
+	lookupEnvR EnvR Zs (int), 
+	typeOf Gamma EnvH EnvR E1 (int), 
+	typeOf Gamma EnvH EnvR' E2 (unitT),  
+	updateEnvR EnvR Zd (int) EnvR'. 
 
 typeOf Gamma EnvH EnvR (load Zd Zs E) (unitT) :- 
 	lookupEnvR EnvR Zd SomeT, 
@@ -100,6 +106,12 @@ step (add Zd Zs V1 E) H R E H R' :-
 step (mult Zd Zs V1 E) H R E H R' :- 
 	lookupMapR R Zs V2, 
 	multiplication V1 V2 V3, 
+	updateMapR R Zd V3 R', 
+	value V3.
+
+step (sub Zd Zs V1 E) H R E H R' :- 
+	lookupMapR R Zs V2, 
+	subtraction V1 V2 V3, 
 	updateMapR R Zd V3 R', 
 	value V3.
 
@@ -237,3 +249,52 @@ multiplication(num i6) (num i4) (num i6).
 multiplication(num i6) (num i5) (num i6).
 multiplication(num i6) (num i6) (num i6).
 
+subtraction(num i0) (num i0) (num i0).
+subtraction(num i0) (num i1) (num i0).
+subtraction(num i0) (num i2) (num i0).
+subtraction(num i0) (num i3) (num i0).
+subtraction(num i0) (num i4) (num i0).
+subtraction(num i0) (num i5) (num i0).
+subtraction(num i0) (num i6) (num i0).
+subtraction(num i1) (num i0) (num i1).
+subtraction(num i1) (num i1) (num i0).
+subtraction(num i1) (num i2) (num i0).
+subtraction(num i1) (num i3) (num i0).
+subtraction(num i1) (num i4) (num i0).
+subtraction(num i1) (num i5) (num i0).
+subtraction(num i1) (num i6) (num i0).
+subtraction(num i2) (num i0) (num i2).
+subtraction(num i2) (num i1) (num i1).
+subtraction(num i2) (num i2) (num i0).
+subtraction(num i2) (num i3) (num i0).
+subtraction(num i2) (num i4) (num i0).
+subtraction(num i2) (num i5) (num i0).
+subtraction(num i2) (num i6) (num i0).
+subtraction(num i3) (num i0) (num i3).
+subtraction(num i3) (num i1) (num i2).
+subtraction(num i3) (num i2) (num i1).
+subtraction(num i3) (num i3) (num i0).
+subtraction(num i3) (num i4) (num i0).
+subtraction(num i3) (num i5) (num i0).
+subtraction(num i3) (num i6) (num i0).
+subtraction(num i4) (num i0) (num i4).
+subtraction(num i4) (num i1) (num i3).
+subtraction(num i4) (num i2) (num i2).
+subtraction(num i4) (num i3) (num i1).
+subtraction(num i4) (num i4) (num i0).
+subtraction(num i4) (num i5) (num i0).
+subtraction(num i4) (num i6) (num i0).
+subtraction(num i5) (num i0) (num i5).
+subtraction(num i5) (num i1) (num i4).
+subtraction(num i5) (num i2) (num i3).
+subtraction(num i5) (num i3) (num i2).
+subtraction(num i5) (num i4) (num i1).
+subtraction(num i5) (num i5) (num i0).
+subtraction(num i5) (num i6) (num i0).
+subtraction(num i6) (num i0) (num i6).
+subtraction(num i6) (num i1) (num i5).
+subtraction(num i6) (num i2) (num i4).
+subtraction(num i6) (num i3) (num i3).
+subtraction(num i6) (num i4) (num i2).
+subtraction(num i6) (num i5) (num i1).
+subtraction(num i6) (num i6) (num i0).

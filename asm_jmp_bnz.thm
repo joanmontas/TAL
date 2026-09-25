@@ -23,6 +23,9 @@ IH0 : induction on 1. intros Main Subset. case Main.
  Mmult: apply IH0 to Typing2 Subset2.  
  Mmult: apply IH0 to Typing3 Subset2.  
  search.  
+ Msub: apply IH0 to Typing2 Subset2.  
+ Msub: apply IH0 to Typing3 Subset2.  
+ search.  
  Mload: apply IH0 to Typing2 Subset2.  
  search.  
  Mmalloc: apply IH0 to Typing1 Subset2.  
@@ -304,6 +307,7 @@ Theorem Store-stores-values-R :
 	  skip.
 
 Theorem TypeOf-strong-updateR: 
+    %assert 
 	forall envH mapR mapR' envR envR' e T L,
     typeOfR envH envR mapR ->
     {updateEnvR envR L T envR'} ->
@@ -313,8 +317,7 @@ Theorem TypeOf-strong-updateR:
     intros TypeOfH LookupEnv TypeOfE Update.
 	TmpLookup : apply update_implies_lookup-R  to Update. 
 	TmpValue : apply Store-stores-values-R  to TmpLookup. 
-	TypeOfE : assert {typeOf nilEnvT envH envR' e T}. 
-	backchain Irrelevance-Env-for-ValueTyping-R. 
+	TypeOfE : assert {typeOf nilEnvT envH envR' e T}. backchain Irrelevance-Env-for-ValueTyping-R. 
     TypeOfHExpanded: case TypeOfH.
     unfold.
     intros LookupEnvHOfGoal.
@@ -380,6 +383,7 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarV1: apply Typing2. 
  TypeOfVarE: apply Typing3. 
  TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
+  
  TypeOfVarV3: apply Find-type-user-defined-addition to Prem1 TypeOfVarV1 TypeOfVarV2.  
  TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
  Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
@@ -403,6 +407,28 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
   
  TypeOfVarV3: apply Find-type-user-defined-multiplication to Prem1 TypeOfVarV1 TypeOfVarV2.  
+ TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
+ Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
+ clear TypeOfH.  
+ TypeOfH: apply Temporary. 
+ clear Temporary.  
+ witness EnvH.  
+ witness EnvR'.  
+ split.  
+ search.  
+ backchain Type-state-envs-weakening-H.  
+ backchain TypeOf-weakening-H.  
+ backchain TypeOf-weakening-R.  
+  
+ Beginssub: apply Step. 
+ Prem0: case Step(keep).  
+ TypeOfVarZd: apply Typing0. 
+ TypeOfVarZs: apply Typing1. 
+ TypeOfVarV1: apply Typing2. 
+ TypeOfVarE: apply Typing3. 
+ TypeOfVarV2: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
+  
+ TypeOfVarV3: apply Find-type-user-defined-subtraction to Prem1 TypeOfVarV1 TypeOfVarV2.  
  TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV3 Prem2.  
  Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
  clear TypeOfH.  
