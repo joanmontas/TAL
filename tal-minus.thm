@@ -1,9 +1,8 @@
 Specification "tal-minus". 
 Import "tal-minusUser". 
 
-/* Obtained by editing tal1.thm. 
-   Comments are inserted only where modifications/additions from tal1 were needed, and are tagged TAL2 
-   Below, we refer to asm_jmp_bnz simply as 'asm' for the sake of simplicity */
+/* Obtained by editing asm_bnz_jmp.thm. 
+   Comments are inserted only where modifications/additions from asm_jmp_bnz were needed, and are tagged TALminus */
    
 
 Theorem Lookup-store-weakening-H:
@@ -17,9 +16,9 @@ IH0 : induction on 1. intros Main Lookup. Subset: case Main.
  search.
 
  
-/* TAL1: tal has multiple typeOf relations rather than just one typeOf. 
-   TypeOfWval-weakening-H and typeOfV-weakening-H are asm's TypeOf-weakening-H but for typeOfWval and typeOfV, respectively. 
-   Differently from asm, Type-state-envs-weakening-H uses typeOfV-weakening-H, which uses TypeOfWval-weakening-H */
+/* TALminus: tal has multiple typeOf relations rather than just one typeOf. 
+   TypeOfWval-weakening-H and typeOfV-weakening-H are asm_bnz_jmp's TypeOf-weakening-H but for typeOfWval and typeOfV, respectively. 
+   Differently from asm_jmp_bnz, Type-state-envs-weakening-H uses typeOfV-weakening-H, which uses TypeOfWval-weakening-H */
 
 Theorem TypeOfWval-weakening-H :
   forall EnvH e t EnvH',
@@ -42,7 +41,7 @@ intros Main Subset.
   search.
   
 
-/* TAL1: slight modification to derive typeOfV formulae to satisfy the typeOfV premises of typeOf, these are MaddV, MmultV, etc. below. */
+/* TALminus: slight modification to derive typeOfV formulae to satisfy the typeOfV premises of typeOf, these are MaddV, MmultV, etc. below. */
 
 Theorem Type-state-envs-weakening-H:
   forall EnvH, forall EnvR, forall e, forall t, forall EnvH',
@@ -84,10 +83,7 @@ Mbnz: apply IH0 to Typing2 Subset.
 search.
 
 
-/* TAL1: slight modification, Irrelevance-Env-for-ValueTyping-R uses typeOfV */
-/* TAL2: Irrelevance-Env-for-ValueTyping-R is now two theorems, 1) Irrelevance-Env-for-ValueTyping-R below that works with typeOfV, 2) and Type-state-envs-weakening-R that works with typeOf */
-/* TAL2: optimization, Irrelevance-Env-for-ValueTyping-R does not neet the premise {value v} because it works with typeOfV, that premise has been removed */
-/* TAL2: slight modification, theorem works for Gamma rather than nilEnvH, same proof works. Type-state-envs-weakening-R needs Gamma. For asm_bnz_jmp and tal1, nilEnvH was fine. */
+/* TALminus: slight modification, Irrelevance-Env-for-ValueTyping-R uses typeOfV */
 
 Theorem Irrelevance-Env-for-ValueTyping-R: 
   forall EnvH, forall EnvR, forall v, forall t, forall EnvR',
@@ -100,7 +96,7 @@ search.
 search.
 
 
-/* TAL1: typeOfH types with typeOfHvl, and typeOfR types with typeOfV */
+/* TALminus: typeOfH types with typeOfHvl, and typeOfR types with typeOfV */
 
 Define typeOfH: envH -> mapH -> prop by
 typeOfH EnvH MapH := forall l, forall t, 
@@ -119,26 +115,19 @@ Theorem Uniqueness-of-lookupMap-H :
   e1 = e2.
 skip.
 
-Theorem Uniqueness-of-lookupMap-R : 
-  forall map L e1 e2, 
-  {lookupMapR map L e1} -> 
-  {lookupMapR map L e2} -> 
-  e1 = e2.
-skip.
+/* TALminus: We use only Find-type-in-env-byLookupH and not Find-type-in-envH. This lemma uses typeOfHvl rather than typeOf */
 
-
-Theorem  Find-type-in-env-byLookupR  :
-    forall EnvH EnvR map L e T,
-    {lookupMapR map L e} ->
-    typeOfR EnvH EnvR map ->
-	{lookupEnvR EnvR L T} ->
-    {typeOfV EnvH EnvR e T}. 
-intros Lookup typeOfH LookupEnv.
-	case typeOfH(keep).
-	apply H1 to LookupEnv.
-	apply Uniqueness-of-lookupMap-R to Lookup H2.
-	search.
-
+Theorem Find-type-in-env-byLookupH :
+    forall EnvH map L e T,
+    {lookupMapH map L e} ->
+    typeOfH EnvH map ->
+    {lookupEnvH EnvH L T} ->
+    {typeOfHvl EnvH e T}.
+intros Lookup TypeH LookupEnv.
+  case TypeH(keep).
+  apply H1 to LookupEnv.
+  apply Uniqueness-of-lookupMap-H to Lookup H2.
+  search.
 
 Theorem Uniqueness-of-lookupEnv-H : 
   forall env L e1 e2, 
@@ -208,28 +197,7 @@ Landl : apply excluded_middle_labels-H with l1 = L, l2 = l.
 	  apply lookup_when_inequal_labels-H to Landl Update LookupMap.
 	  search.
 
-
-/* TAL1: typeOf-weakening-H uses TypeOfHvl rather than typeOf
-   slight modification in proof, it uses TypeOfWval-weakening-H */
-
-Theorem typeOf-weakening-H :
-  forall EnvH e t EnvH',
-    {typeOfHvl EnvH e t} ->
-    {subsetEnvH EnvH EnvH'} ->
-    {typeOfHvl EnvH' e t}.
-intros Main Subset. case Main.
-  apply TypeOfWval-weakening-H to H1 Subset.
-  apply TypeOfWval-weakening-H to H2 Subset.
-  apply TypeOfWval-weakening-H to H3 Subset.
-  apply TypeOfWval-weakening-H to H4 Subset.
-  apply TypeOfWval-weakening-H to H5 Subset.
-  apply TypeOfWval-weakening-H to H6 Subset.
-  search. 
-apply Type-state-envs-weakening-H to H1 Subset.
-  search.
-
-
-/* TAL1: TypeOf-extend-prelim-H uses TypeOfHvl rather than typeOf
+/* TALminus: TypeOf-extend-prelim-H uses TypeOfHvl rather than typeOf
    proof is the same */
 
 Theorem TypeOf-extend-prelim-H:  
@@ -264,8 +232,9 @@ induction on 1. intros Main Lookup.
   Subset: case Main.
   search.
 
+/* Theorem Store-stores-value-H from asm_jmp_bnz has been removed because it is not needed.*/
 
-/* TAL1: TypeOf-weakening-for-extns-H, slight modification, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
+/* TALminus: TypeOf-weakening-for-extns-H, slight modification, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
 
 Theorem TypeOf-weakening-for-extns-H: 
  	forall EnvH EnvR L T R,
@@ -278,20 +247,29 @@ FromTypeOfR : apply TypeOfRExpanded to LookupFromGoal.
 exists e. split. search. 
 backchain TypeOfV-weakening-H.
 
+Theorem Uniqueness-of-lookupMap-R : 
+  forall map L e1 e2, 
+  {lookupMapR map L e1} -> 
+  {lookupMapR map L e2} -> 
+  e1 = e2.
+skip.
 
-/* TAL1: We use only Find-type-in-env-byLookupH and not Find-type-in-envH. This lemma uses typeOfHvl rather than typeOf */
 
-Theorem Find-type-in-env-byLookupH :
-    forall EnvH map L e T,
-    {lookupMapH map L e} ->
-    typeOfH EnvH map ->
-    {lookupEnvH EnvH L T} ->
-    {typeOfHvl EnvH e T}.
-intros Lookup TypeH LookupEnv.
-  case TypeH(keep).
-  apply H1 to LookupEnv.
-  apply Uniqueness-of-lookupMap-H to Lookup H2.
-  search.
+/* TALminus: Find-type-in-env-byLookupR uses typeOfV rather than typeOf */
+  
+Theorem  Find-type-in-env-byLookupR  :
+    forall EnvH EnvR map L e T,
+    {lookupMapR map L e} ->
+    typeOfR EnvH EnvR map ->
+	{lookupEnvR EnvR L T} ->
+    {typeOfV EnvH EnvR e T}. 
+intros Lookup typeOfH LookupEnv.
+	case typeOfH(keep).
+	apply H1 to LookupEnv.
+	apply Uniqueness-of-lookupMap-R to Lookup H2.
+	search.
+
+
 
 Theorem Uniqueness-of-lookupEnv-R : 
   forall env L e1 e2, 
@@ -365,9 +343,12 @@ Theorem lookup_when_inequal_labels-pre-EnvR:
               search.
               apply IH to Lanld STupdate STlookup. search.
 
+/* Theorem Store-stores-value-R from asm_jmp_bnz has been removed because it is not needed.*/
 
+/* TALminus: The following three lemmas have been added: lookup_when_inequal_labels-EnvR */
+/* TALminus: The following three lemmas have been added: lookupEnvR-weakening-R, updateEnvR-weakening-R, transitivity-register_file_subtype. */ 
+/* TALminus: updateEnvR-weakening-R makes use lemma register_file_subtype-cons-weakening-R, also added. */ 
 
-/* TAL2: moved lookup_when_inequal_labels-EnvR here because other lemmas need it earlier */ 
 Theorem lookup_when_inequal_labels-EnvR :
   forall l1 l2 map map' e1 e2,
     (l2 = l1 -> false) ->
@@ -383,9 +364,6 @@ induction on 2.
 STlookup : case STlookup.
           search.
           apply IH to Lanld STupdate STlookup. search.
-
-/* TAL2: The following three lemmas have been added: lookupEnvR-weakening-R, updateEnvR-weakening-R, transitivity-register_file_subtype. */ 
-/* TAL2: updateEnvR-weakening-R makes use lemma register_file_subtype-cons-weakening-R, also added. */ 
 
 Theorem lookupEnvR-weakening-R: forall EnvR Z T EnvR', 
 	{lookupEnvR EnvR Z T} -> 
@@ -590,7 +568,7 @@ Theorem TypeOf-strong-updateR:
     backchain Irrelevance-Env-for-ValueTyping-R.
 		
 	
-/* TAL 1: TypeOf-weakening-for-extns-R, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
+/* TALminus: TypeOf-weakening-for-extns-R, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
 
  Theorem TypeOf-weakening-for-extns-R: 
  	forall EnvH EnvR L T R,
@@ -604,8 +582,26 @@ Theorem TypeOf-strong-updateR:
   backchain TypeOfV-weakening-H.
   
   
+/* TALminus: typeOf-weakening-H uses TypeOfHvl rather than typeOf
+   slight modification in proof, it uses TypeOfWval-weakening-H */
 
+Theorem typeOf-weakening-H :
+  forall EnvH e t EnvH',
+    {typeOfHvl EnvH e t} ->
+    {subsetEnvH EnvH EnvH'} ->
+    {typeOfHvl EnvH' e t}.
+intros Main Subset. case Main.
+  apply TypeOfWval-weakening-H to H1 Subset.
+  apply TypeOfWval-weakening-H to H2 Subset.
+  apply TypeOfWval-weakening-H to H3 Subset.
+  apply TypeOfWval-weakening-H to H4 Subset.
+  apply TypeOfWval-weakening-H to H5 Subset.
+  apply TypeOfWval-weakening-H to H6 Subset.
+  search. 
+apply Type-state-envs-weakening-H to H1 Subset.
+  search.
 
+/* TALminus: TypeOf-weakening-R has been removed as it is not needed. */
 /* TAL 1: Type-preservation, modifications are marked within the proof. */
 /* TAL 2: General modification: Irrelevance-Env-for-ValueTyping-R does not take any longer the premise {value v}, 
           then when tal1.thm has, for example: apply Irrelevance-Env-for-ValueTyping-R to TypingInsertedV3 Prem3 with EnvR' = EnvR'.  we omit passing Prem3. */
