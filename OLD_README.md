@@ -15,7 +15,7 @@ A Typed Assembly Language: TAL of Morrisett et al. [1] without existential types
 </br>
 The mechanized proof of <b>tal-minus</b> has been obtained by editing the proof of <b>asm_jmp_bnz</b>. 
 </br>
-The <b>tal-minus.thm</b> proof contains comments were modifications/additions have been needed. These comments have the form <b>/* TAL1: ... */</b>.
+The <b>tal-minus.thm</b> proof contains comments were modifications/additions have been needed. These comments have the form <b>/* TALminus: ... */</b>.
 </br>
 </br>
 <i><b>Time effort</b></i>: ~2 work days and a half (starting from <b>asm_jmp_bnz</b>). 
@@ -31,12 +31,8 @@ Make sure you possess the Abella proof assistant tool in the version stated in t
 
   `abella asm_jmp_bnzUser.thm -c asm_jmp_bnzUser.thc ; abella asm_jmp_bnz.thm`
 </li>
-<li> For <b>tal1</b>, run: 
+<li> For <b>tal-minus.thm</b>, run: 
 
-  `abella ta1lUser.thm -c ta1lUser.thc ; abella tal1.thm`
-</li>
-<li> For <b>tal2</b>, run: 
-
-  `abella ta2lUser.thm -c ta2lUser.thc ; abella tal2.thm`
+  `abella tal-minus.thm -c tal-minus.thc ; tal-minus.thm`
 </li>
 </ul>
