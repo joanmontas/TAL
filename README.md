@@ -33,6 +33,6 @@ Make sure you possess the Abella proof assistant tool in the version stated in t
 </li>
 <li> For <b>tal-minus.thm</b>, run: 
 
-  `abella tal-minus.thm -c tal-minus.thc ; tal-minus.thm`
+  `abella tal-minusUser.thm -c tal-minusUser.thc ; abella tal-minus.thm`
 </li>
 </ul>
