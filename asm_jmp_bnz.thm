@@ -477,7 +477,7 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  clear TypeOfR.  
  TypeOfR: apply Temporary. 
  clear Temporary.  
- TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing3 TypeOfVarLNewH Prem1.  
+ TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarLNewH Prem1.  
  Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
  clear TypeOfH.  
  TypeOfH: apply Temporary. 
@@ -495,7 +495,7 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarZd: apply Typing0. 
  TypeOfVarV: apply Typing1. 
  TypeOfVarE: apply Typing2. 
- TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing3 TypeOfVarV Prem0.  
+ TypeOfR': apply TypeOf-strong-updateR to TypeOfR Typing4 TypeOfVarV Prem0.  
  Temporary: apply TypeOf-weakening-H to TypeOfH with EnvR' = EnvR'.  
  clear TypeOfH.  
  TypeOfH: apply Temporary. 

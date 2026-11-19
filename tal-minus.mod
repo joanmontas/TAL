@@ -115,14 +115,16 @@ typeOf EnvH EnvR (malloc Zd E1 E2 E3 E4 E5 E6 E) (unitT) :-
     typeOfV EnvH EnvR E5 T5, 
     typeOfV EnvH EnvR E6 T6, 
     typeOf EnvH EnvR' E (unitT),
-    updateEnvR EnvR Zd (arrayT T1 T2 T3 T4 T5 T6) EnvR'.
+    updateEnvR EnvR Zd (arrayT T1 T2 T3 T4 T5 T6) EnvR', 
+	typematch T1, typematch T2, typematch T3, typematch T4, typematch T5, typematch T6.
 
 
 typeOf EnvH EnvR (move Zd E1 E2) (unitT) :- 
     lookupEnvR EnvR Zd SomeT, 
     typeOfV EnvH EnvR E1 T, 
     typeOf EnvH EnvR' E2 (unitT),
-    updateEnvR EnvR Zd T EnvR'.
+    updateEnvR EnvR Zd T EnvR', 
+	typematch T. 
 
 
 typeOf EnvH EnvR (store Zd Zs I E) (unitT) :- 

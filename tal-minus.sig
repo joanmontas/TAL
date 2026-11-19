@@ -93,6 +93,8 @@ type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
 type subtraction term -> term -> term -> o.
 
+type typematch typ -> o. 
+
 type array_get term -> term -> term -> o.
 type arrayT_get typ -> term -> typ -> o.
 type array_set term -> term -> term -> term -> o.

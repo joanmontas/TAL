@@ -69,12 +69,15 @@ typeOf Gamma EnvH EnvR (malloc Zd E1 E2) (unitT) :-
 	lookupEnvR EnvR Zd SomeT, 
 	typeOf Gamma EnvH EnvR E1 T, 
 	typeOf Gamma EnvH EnvR' E2 (unitT), 
-	updateEnvR EnvR Zd (refH T) EnvR'.
+	typematch T, 
+	updateEnvR EnvR Zd (refH T) EnvR'. 
+	
 
 typeOf Gamma EnvH EnvR (move Zd E1 E2) (unitT) :- 
 	lookupEnvR EnvR Zd SomeT, 
 	typeOf Gamma EnvH EnvR E1 T, 
 	typeOf Gamma EnvH EnvR' E2 (unitT), 
+	typematch T, 
 	updateEnvR EnvR Zd T EnvR'. 
 	
 
@@ -148,6 +151,9 @@ step (bnz Zs (labelH L) E) H R E H R :-
 
 value (num I).
 value (labelH L).
+
+typematch (int).
+typematch (refH T).
 
 addition (num i0) (num i0) (num i0).
 addition (num i0) (num i1) (num i1).

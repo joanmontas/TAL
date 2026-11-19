@@ -256,7 +256,7 @@ induction on 1. intros Main Lookup.
   Subset: case Main.
   search.
 
-/* Theorem Store-stores-value-H from asm_jmp_bnz has been removed because it is not needed.*/
+/* TALminus: Theorem Store-stores-value-H from asm_jmp_bnz has been removed because it is not needed. */
 
 /* TALminus: TypeOf-weakening-for-extns-H, slight modification, backchain TypeOfV-weakening-H instead of backchain Type-state-envs-weakening-H. */
 
@@ -385,7 +385,7 @@ STlookup : case STlookup.
           search.
           apply IH to Lanld STupdate STlookup. search.
 
-/* Theorem Store-stores-value-R from asm_jmp_bnz has been removed because it is not needed.*/
+/* TALminus: Theorem Store-stores-value-R from asm_jmp_bnz has been removed because it is not needed. */
 
 /* TALminus: The following three lemmas have been added: 
 	- lookupEnvR-weakening-R used in Type-state-envs-weakening-R, which is at some point below.
@@ -533,7 +533,7 @@ Theorem TypeOf-strong-updateR:
   
 
 
-/* Type-state-envs-weakening-R is new, it was not needed in asm_bnz_jmp but is needed here to reason up to 'register_file_subtype' 
+/* TALminus: Type-state-envs-weakening-R is new, it was not needed in asm_bnz_jmp but is needed here to reason up to 'register_file_subtype' 
    Type_preservation uses Type-state-envs-weakening-R */
 
 Theorem Type-state-envs-weakening-R:
@@ -859,7 +859,7 @@ witness EnvR.
 search. 
 
 
-/* TAL1: case of jmp 
+/* TALminus: case of jmp 
    As in the load operation: Added the two extra case proof instructions: 'typeOfWval-VarL : case TypeOfVarL' and 'LookupVarL : case typeOfWval-VarL'
    to derive a lookup formula from typing a label. */
 
@@ -873,12 +873,12 @@ case TypeOfVarcode(keep).
 witness EnvH.  
 witness EnvR.  
 split.  
-/* TAL2: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
+/* TALminus: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
 backchain Type-state-envs-weakening-R.  
 search.
 search.
 
-/* TAL1: case of bnz
+/* TALminus: case of bnz
    As in the load operation: Added the two extra case proof instructions: 'typeOfWval-VarL : case TypeOfVarL' and 'LookupVarL : case typeOfWval-VarL'
    to derive a lookup formula from typing a label. */
 
@@ -908,7 +908,7 @@ LookupVarL : case typeOfWval-VarL.
  witness EnvH.  
  witness EnvR.  
  split.  
-/* TAL2: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
+/* TALminus: backchain Type-state-envs-weakening-R instead of backchain Type-state-envs-weakening-H. */
  backchain Type-state-envs-weakening-R.  
  search.  
  search.  
